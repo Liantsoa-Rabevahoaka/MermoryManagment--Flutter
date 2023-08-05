@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:project/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -12,12 +13,6 @@ class AuthService {
         email: email,
         password: password,
       );
-
-
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      // Enregistrez l'état de connexion de l'utilisateur dans shared_preferences
-      await prefs.setBool('isLoggedIn', true);
 
       return result.user;
     } catch (e) {
@@ -34,14 +29,33 @@ class AuthService {
         password: password,
       );
 
-      // Enregistrez l'état de connexion de l'utilisateur dans shared_preferences
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      await prefs.setBool('isLoggedIn', true);
-
       return result.user;
     } catch (e) {
       print("Erreur lors de la connexion : $e");
+      return null;
+    }
+  }
+
+  // Méthode pour recupérer l'utilisateur actuellement connecté avec ses informations dans firebase firestore
+  Future<UserModel?> getCurrentUser() async {
+    try {
+      User? user = _auth.currentUser;
+
+      if (user != null) {
+        // Récupérer les données de l'utilisateur à partir de firestore ou l'email is test@test
+        QuerySnapshot<Object?> userData = await FirebaseFirestore.instance
+            .collection('Users')
+            .where('email', isEqualTo: user.email)
+            .limit(1)
+            .get();
+
+        return UserModel(
+          email: user.email!,
+          role: userData.docs[0].get('role'),
+        );
+      }
+    } catch (e) {
+      print("Erreur lors de la récupération de l'utilisateur : $e");
       return null;
     }
   }
@@ -50,10 +64,6 @@ class AuthService {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
-
-      // Réinitialisez l'état de connexion de l'utilisateur dans shared_preferences
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLoggedIn', false);
     } catch (e) {
       print("Erreur lors de la déconnexion : $e");
     }
@@ -61,7 +71,12 @@ class AuthService {
 
   // Méthode pour vérifier si l'utilisateur est connecté
   Future<bool> isLoggedIn() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('isLoggedIn') ?? false;
+    try {
+      final User? user = _auth.currentUser;
+      return user != null;
+    } catch (e) {
+      print("Error checking user login status: $e");
+      return false;
+    }
   }
 }
