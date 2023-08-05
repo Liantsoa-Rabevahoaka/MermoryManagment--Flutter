@@ -38,7 +38,7 @@ class SignInScreen extends StatelessWidget {
                     await _authService.signInWithEmail(email, password);
                 handleLoggedInUser(true, context);
               },
-              child: Text('S\'inscrire'),
+              child: Text('Se connecter'),
             ),
           ],
         ),
