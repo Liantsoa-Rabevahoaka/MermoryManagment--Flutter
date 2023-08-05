@@ -1,11 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:project/screens/auth/signin_screen.dart';
 import 'package:project/services/auth_service.dart';
 import 'package:project/utils/navigation.dart';
 import 'firebase_options.dart';
-import 'screens/home/student_home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
