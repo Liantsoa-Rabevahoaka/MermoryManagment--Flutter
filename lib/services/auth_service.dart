@@ -50,8 +50,12 @@ class AuthService {
             .get();
 
         return UserModel(
+          id: '',
+          name: '',
           email: user.email!,
           role: userData.docs[0].get('role'),
+          age: 22,
+          password: '',
         );
       }
     } catch (e) {

@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
 import '../../services/auth_service.dart';
+import '../admin/crud_student_screen.dart';
 import '../auth/signin_screen.dart';
 
 class AdminHomeScreen extends StatefulWidget {
@@ -22,27 +23,25 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     });
   }
 
+  static List<Widget> _widgetOptions = <Widget>[
+    CrudStudentScreen(),
+    Text(
+      'Index 1: Business',
+    ),
+    Text(
+      'Index 2: School',
+    ),
+    Text(
+      'Index 3: Settings',
+    ),
+    Text('Index 4: Settings'),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Flutter Demo")),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
+      body: Center(child: _widgetOptions.elementAt(_currentIndex)),
       bottomNavigationBar: BottomNavyBar(
         selectedIndex: _currentIndex,
         showElevation: true,
