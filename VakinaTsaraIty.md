@@ -1,7 +1,7 @@
 Ao @ lib daholo
 Service = controller
 Model = model
-Sreen = views 
+Screen = views 
 Utils = {
     firebase_option = naviguer 
     random = 

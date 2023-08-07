@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:project/models/student_model.dart';
 import 'package:project/models/user_model.dart';
+import 'package:project/screens/admin/student_detail_screen.dart';
 
 import '../../services/student_service.dart';
 
-class CrudStudentScreen extends StatelessWidget {
+class CrudStudentScreen extends StatefulWidget {
+  @override
+  _CrudStudentScreenState createState() => _CrudStudentScreenState();
+}
+
+class _CrudStudentScreenState extends State<CrudStudentScreen> {
   final StudentService studentService = StudentService();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -18,16 +27,63 @@ class CrudStudentScreen extends StatelessWidget {
         children: [
           ElevatedButton(
             onPressed: () {
-              // Add student
-              //TODO: Ajouter une formulaire pour ajouter un étudiant pour enregistrer les données dans firebase
-              studentService.addStudent(UserModel(
-                id: '4',
-                name: 'John Doe',
-                email: 'create@gmail.com',
-                age: 20,
-                password: '',
-                role: '',
-              ));
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Add Student'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextField(
+                          controller: nameController,
+                          decoration: InputDecoration(labelText: 'Name'),
+                        ),
+                        SizedBox(height: 16),
+                        TextField(
+                          controller: emailController,
+                          decoration: InputDecoration(labelText: 'Email'),
+                        ),
+                        SizedBox(height: 16),
+                        TextField(
+                          controller: ageController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(labelText: 'Age'),
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () {
+                          String name = nameController.text.trim();
+                          String email = emailController.text.trim();
+                          int age = int.tryParse(ageController.text) ?? 0;
+
+                          UserModel student = UserModel(
+                            id: '...', // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
+                            name: name,
+                            email: email,
+                            age: age,
+                            password: '',
+                            role: '',
+                          );
+
+                          studentService.addStudent(student);
+
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Save'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cancel'),
+                      ),
+                    ],
+                  );
+                },
+              );
             },
             child: Text('Add Student'),
           ),
@@ -49,17 +105,21 @@ class CrudStudentScreen extends StatelessWidget {
                             IconButton(
                               icon: Icon(Icons.remove_red_eye),
                               onPressed: () {
-                                //TODO: Ajouter une vue pour afficher les détails d'un étudiant
                                 // View student details
-                                // Add your code here
-                              },
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => StudentDetailScreen(
+                                      student: students[index],
+                                    ),
+                                  ),
+                                );
+},
                             ),
                             IconButton(
                               icon: Icon(Icons.edit),
                               onPressed: () {
-                                //TODO: Ajouter une formulaire pour modifier un étudiant pour enregistrer les données dans firebase
-                                // Edit student details
-                                // Add your code here
+                                _showEditDialog(context, students[index]);
                               },
                             ),
                             IconButton(
@@ -88,3 +148,61 @@ class CrudStudentScreen extends StatelessWidget {
     );
   }
 }
+
+void _showEditDialog(BuildContext context, UserModel student) {
+    TextEditingController nameController = TextEditingController(text: student.name);
+    TextEditingController emailController = TextEditingController(text: student.email);
+    TextEditingController ageController = TextEditingController(text: student.age.toString());
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit Student'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Name:'),
+              TextField(
+                controller: nameController,
+              ),
+              SizedBox(height: 16),
+              Text('Email:'),
+              TextField(
+                controller: emailController,
+              ),
+              SizedBox(height: 16),
+              Text('Age:'),
+              TextField(
+                controller: ageController,
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                String newName = nameController.text.trim();
+                String newEmail = emailController.text.trim();
+                int newAge = int.tryParse(ageController.text) ?? 0;
+
+                var studentService;
+                studentService.updateStudent(student.id, newName, newEmail, newAge);
+
+                Navigator.pop(context);
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
