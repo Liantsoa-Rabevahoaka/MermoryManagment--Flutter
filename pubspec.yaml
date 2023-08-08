@@ -41,6 +41,8 @@ dependencies:
   shared_preferences: ^2.2.0
   bottom_navy_bar: ^6.0.0
   flutter_launcher_icons: ^0.13.1
+  table_calendar: ^3.0.8
+
 
 dev_dependencies:
   flutter_test:

@@ -150,6 +150,7 @@ class _CrudStudentScreenState extends State<CrudStudentScreen> {
 }
 
 void _showEditDialog(BuildContext context, UserModel student) {
+    TextEditingController idController = TextEditingController(text: student.id);
     TextEditingController nameController = TextEditingController(text: student.name);
     TextEditingController emailController = TextEditingController(text: student.email);
     TextEditingController ageController = TextEditingController(text: student.age.toString());
@@ -189,12 +190,25 @@ void _showEditDialog(BuildContext context, UserModel student) {
             ),
             TextButton(
               onPressed: () {
+                String id = idController.text.trim();
                 String newName = nameController.text.trim();
                 String newEmail = emailController.text.trim();
                 int newAge = int.tryParse(ageController.text) ?? 0;
 
-                var studentService;
-                studentService.updateStudent(student.id, newName, newEmail, newAge);
+                // ignore: prefer_typing_uninitialized_variables
+
+                 UserModel student = UserModel
+                 (
+                            id: id, // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
+                            name: newName,
+                            email: newEmail,
+                            age: newAge,
+                            password: '',
+                            role: '',
+                );
+                StudentService studentService = StudentService();
+                
+                studentService.updateStudent(student);
 
                 Navigator.pop(context);
               },
@@ -205,4 +219,3 @@ void _showEditDialog(BuildContext context, UserModel student) {
       },
     );
   }
-
