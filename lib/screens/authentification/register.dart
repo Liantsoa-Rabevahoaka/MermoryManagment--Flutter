@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/models/customTextField.dart';
+import '../../models/customTextField.dart';
 
 class Register extends StatefulWidget {
-
   final Function visible;
   Register(this.visible);
 
@@ -10,17 +9,15 @@ class Register extends StatefulWidget {
   State<Register> createState() => _RegisterState();
 }
 
-
 class _RegisterState extends State<Register> {
   CustomTextField emailText =
-  CustomTextField(title: 'Email', placeholder: 'Enter your email');
-  CustomTextField passText = CustomTextField(
-      title: 'Password', placeholder: '*****', ispass: true);
+      CustomTextField(title: 'Email', placeholder: 'Enter your email');
+  CustomTextField passText =
+      CustomTextField(title: 'Password', placeholder: '*****', ispass: true);
   CustomTextField confirmPassText = CustomTextField(
       title: 'Confirm Password', placeholder: '*****', ispass: true);
   final _key = GlobalKey<FormState>();
   @override
-
   Widget build(BuildContext context) {
     emailText.error = "Enter email";
     passText.error = "Enter password";

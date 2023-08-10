@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/session_model.dart';
 import '../../services/session_service.dart';
-import 'package:gestion_de_soutenance/screens/admin/index_list.dart';
+import 'index_list.dart';
 
 class joinSessionPage extends StatelessWidget {
   final SessionService sessionService = SessionService();
@@ -33,15 +33,14 @@ class joinSessionPage extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: Icon(Icons.remove_red_eye),
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => AdminHomeScreen(),
-                                    ),
-                                  );
-                                }
-                              ),
+                                  icon: Icon(Icons.remove_red_eye),
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => AdminHomeScreen(),
+                                      ),
+                                    );
+                                  }),
                               IconButton(
                                 icon: Icon(Icons.edit),
                                 onPressed: () {

@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import '../../main.dart';
 import '../../services/auth_service.dart';
 
-
-import 'package:gestion_de_soutenance/screens/students/indexStudent.dart';
-import 'package:gestion_de_soutenance/screens/students/planningStudent.dart';
-import 'package:gestion_de_soutenance/screens/students/noteStudent.dart';
-
+import '../students/indexStudent.dart';
+import '../students/planningStudent.dart';
+import '../students/noteStudent.dart';
 
 class StudentHomeScreen extends StatefulWidget {
   final String title;

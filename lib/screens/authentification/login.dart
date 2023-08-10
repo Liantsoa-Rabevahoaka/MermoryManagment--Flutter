@@ -1,12 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/models/customTextField.dart';
+import '../../models/customTextField.dart';
 import '../../main.dart';
 import '../../services/auth_service.dart';
 import '../../utils/navigation.dart';
 
 class Login extends StatefulWidget {
-
   final Function visible;
   Login(this.visible);
 
@@ -15,14 +14,14 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-
   final AuthService _authService = AuthService();
-  CustomTextField emailText = CustomTextField(title: 'Email', placeholder: 'Enter your email');
-  CustomTextField passText = CustomTextField(title: 'Password', placeholder: '*****', ispass: true);
+  CustomTextField emailText =
+      CustomTextField(title: 'Email', placeholder: 'Enter your email');
+  CustomTextField passText =
+      CustomTextField(title: 'Password', placeholder: '*****', ispass: true);
 
   final _key = GlobalKey<FormState>();
   @override
-
   Widget build(BuildContext context) {
     emailText.error = "Enter email";
     passText.error = "Enter password";
@@ -63,15 +62,16 @@ class _LoginState extends State<Login> {
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            String email = emailText.value; // Déplacer la définition de la variable email ici
+                            String email = emailText
+                                .value; // Déplacer la définition de la variable email ici
                             String password = passText.value;
 
                             if (_key.currentState?.validate() ?? false) {
-                              User? user = await _authService.signInWithEmail(email, password);
+                              User? user = await _authService.signInWithEmail(
+                                  email, password);
                               handleLoggedInUser(true, context);
                             }
                           },
-
                           style: ElevatedButton.styleFrom(
                             primary: Colors.redAccent.withOpacity(.7),
                             shape: RoundedRectangleBorder(

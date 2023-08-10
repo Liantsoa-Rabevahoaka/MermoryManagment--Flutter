@@ -4,7 +4,7 @@ import '../../main.dart';
 import '../../services/auth_service.dart';
 import '../admin/event/event_screen.dart';
 
-import 'package:gestion_de_soutenance/screens/admin/homePage_admin.dart';
+import 'homePage_admin.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   AdminHomeScreen();
@@ -25,7 +25,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
   static List<Widget> _widgetOptions = <Widget>[
     Index(), // Appelé lorsque vous appuyez sur l'icône "Home"
-    EventScreen(),  // Appelé lorsque vous appuyez sur l'icône "Users"
+    EventScreen(), // Appelé lorsque vous appuyez sur l'icône "Users"
     Text(
       'Index 2: School',
     ),

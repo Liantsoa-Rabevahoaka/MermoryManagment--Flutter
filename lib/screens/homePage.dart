@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/services/auth_service.dart';
+import '../services/auth_service.dart';
 import '../utils/navigation.dart';
 
-import 'package:gestion_de_soutenance/screens/authentification/login.dart';
-import 'package:gestion_de_soutenance/screens/authentification/register.dart';
+import 'authentification/login.dart';
+import 'authentification/register.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -44,4 +44,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-

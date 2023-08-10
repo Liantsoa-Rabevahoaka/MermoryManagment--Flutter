@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/screens/admin/student_detail_screen.dart';
 import '../../models/user_model.dart';
 import '../../services/student_service.dart';
-
+import 'student_detail_screen.dart';
 
 class StudentList extends StatefulWidget {
   @override
@@ -21,8 +20,7 @@ class _CrudStudentListState extends State<StudentList> {
       appBar: AppBar(
         title: Text('Listes des etudiants'),
       ),
-      body:
-      Column(
+      body: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           ElevatedButton(
@@ -87,7 +85,6 @@ class _CrudStudentListState extends State<StudentList> {
             },
             child: Text('Add Student'),
           ),
-
           Expanded(
             child: StreamBuilder<List<UserModel>>(
               //Affichage etudiants
@@ -98,47 +95,46 @@ class _CrudStudentListState extends State<StudentList> {
                   return ListView.builder(
                     itemCount: students.length,
                     itemBuilder: (context, index) {
-                      return
-                        Card(
-                          child: ListTile(
-                            // leading: Image.asset("assets/images/logo.png"),
-                            title:Text(students[index].name),
-                            subtitle: Text(students[index].email),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: Icon(Icons.remove_red_eye),
-                                  onPressed: () {
-                                    // View student details
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => StudentDetailScreen(
-                                          student: students[index],
-                                        ),
+                      return Card(
+                        child: ListTile(
+                          // leading: Image.asset("assets/images/logo.png"),
+                          title: Text(students[index].name),
+                          subtitle: Text(students[index].email),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.remove_red_eye),
+                                onPressed: () {
+                                  // View student details
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => StudentDetailScreen(
+                                        student: students[index],
                                       ),
-                                    );
-                                  },
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.edit),
-                                  onPressed: () {
-                                    _showEditDialog(context, students[index]);
-                                  },
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () {
-                                    // Delete student
-                                    studentService
-                                        .deleteStudent(students[index].id);
-                                  },
-                                ),
-                              ],
-                            ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.edit),
+                                onPressed: () {
+                                  _showEditDialog(context, students[index]);
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () {
+                                  // Delete student
+                                  studentService
+                                      .deleteStudent(students[index].id);
+                                },
+                              ),
+                            ],
                           ),
-                        );
+                        ),
+                      );
                     },
                   );
                 } else if (snapshot.hasError) {
@@ -157,9 +153,12 @@ class _CrudStudentListState extends State<StudentList> {
 
 void _showEditDialog(BuildContext context, UserModel student) {
   TextEditingController idController = TextEditingController(text: student.id);
-  TextEditingController nameController = TextEditingController(text: student.name);
-  TextEditingController emailController = TextEditingController(text: student.email);
-  TextEditingController ageController = TextEditingController(text: student.age.toString());
+  TextEditingController nameController =
+      TextEditingController(text: student.name);
+  TextEditingController emailController =
+      TextEditingController(text: student.email);
+  TextEditingController ageController =
+      TextEditingController(text: student.age.toString());
 
   showDialog(
     context: context,
@@ -203,8 +202,7 @@ void _showEditDialog(BuildContext context, UserModel student) {
 
               // ignore: prefer_typing_uninitialized_variables
 
-              UserModel student = UserModel
-                (
+              UserModel student = UserModel(
                 id: id, // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
                 name: newName,
                 email: newEmail,
@@ -225,4 +223,3 @@ void _showEditDialog(BuildContext context, UserModel student) {
     },
   );
 }
-

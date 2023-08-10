@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/screens/admin/student_detail_screen.dart';
+import 'student_detail_screen.dart';
 import '../../models/user_model.dart';
 import '../../services/jury_service.dart';
 
@@ -115,7 +115,7 @@ class _JuryscreenState extends State<Juryscreen> {
                                     ),
                                   ),
                                 );
-},
+                              },
                             ),
                             IconButton(
                               icon: Icon(Icons.edit),
@@ -151,73 +151,74 @@ class _JuryscreenState extends State<Juryscreen> {
 }
 
 void _showEditDialog(BuildContext context, UserModel student) {
-    TextEditingController idController = TextEditingController(text: student.id);
-    TextEditingController nameController = TextEditingController(text: student.name);
-    TextEditingController emailController = TextEditingController(text: student.email);
-    TextEditingController ageController = TextEditingController(text: student.age.toString());
+  TextEditingController idController = TextEditingController(text: student.id);
+  TextEditingController nameController =
+      TextEditingController(text: student.name);
+  TextEditingController emailController =
+      TextEditingController(text: student.email);
+  TextEditingController ageController =
+      TextEditingController(text: student.age.toString());
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Modifier'),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Name:'),
-              TextField(
-                controller: nameController,
-              ),
-              SizedBox(height: 16),
-              Text('Email:'),
-              TextField(
-                controller: emailController,
-              ),
-              SizedBox(height: 16),
-              Text('Age:'),
-              TextField(
-                controller: ageController,
-                keyboardType: TextInputType.number,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Annuler'),
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Modifier'),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Name:'),
+            TextField(
+              controller: nameController,
             ),
-            TextButton(
-              onPressed: () {
-                String id = idController.text.trim();
-                String newName = nameController.text.trim();
-                String newEmail = emailController.text.trim();
-                int newAge = int.tryParse(ageController.text) ?? 0;
-
-                // ignore: prefer_typing_uninitialized_variables
-
-                 UserModel student = UserModel
-                 (
-                            id: id, // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
-                            name: newName,
-                            email: newEmail,
-                            age: newAge,
-                            password: '',
-                            role: '',
-                );
-                StudentService studentService = StudentService();
-                
-                studentService.updateStudent(student);
-
-                Navigator.pop(context);
-              },
-              child: Text('Enregistrer'),
+            SizedBox(height: 16),
+            Text('Email:'),
+            TextField(
+              controller: emailController,
+            ),
+            SizedBox(height: 16),
+            Text('Age:'),
+            TextField(
+              controller: ageController,
+              keyboardType: TextInputType.number,
             ),
           ],
-        );
-      },
-    );
-  }
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () {
+              String id = idController.text.trim();
+              String newName = nameController.text.trim();
+              String newEmail = emailController.text.trim();
+              int newAge = int.tryParse(ageController.text) ?? 0;
 
+              // ignore: prefer_typing_uninitialized_variables
+
+              UserModel student = UserModel(
+                id: id, // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
+                name: newName,
+                email: newEmail,
+                age: newAge,
+                password: '',
+                role: '',
+              );
+              StudentService studentService = StudentService();
+
+              studentService.updateStudent(student);
+
+              Navigator.pop(context);
+            },
+            child: Text('Enregistrer'),
+          ),
+        ],
+      );
+    },
+  );
+}

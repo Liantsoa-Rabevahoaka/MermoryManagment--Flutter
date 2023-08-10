@@ -2,10 +2,9 @@ import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/models/session_model.dart';
+import '../../../models/session_model.dart';
+
 import 'package:table_calendar/table_calendar.dart';
-
-
 import '../../../services/session_service.dart';
 import 'edit_event.dart';
 import '../../../models/event.dart';
@@ -180,7 +179,7 @@ class _EventScreenState extends State<EventScreen> {
 
           //Recupere et affiche la liste des sessions
           StreamBuilder<List<SessionModel>>(
-            stream: SessionService().getEventListStream(),
+            stream: SessionService().getSession(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 List<SessionModel> events = snapshot.data!;
@@ -202,7 +201,6 @@ class _EventScreenState extends State<EventScreen> {
             },
           )
         ],
-        
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {

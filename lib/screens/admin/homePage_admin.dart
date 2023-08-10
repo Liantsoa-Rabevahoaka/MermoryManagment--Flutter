@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/screens/admin/jurys_screen.dart';
-import 'package:gestion_de_soutenance/screens/admin/student_detail_screen.dart';
+import 'jurys_screen.dart';
+import 'student_detail_screen.dart';
 import '../../models/user_model.dart';
 import '../../services/student_service.dart';
-import 'package:gestion_de_soutenance/screens/admin/studentList.dart';
+import 'studentList.dart';
 
 class Index extends StatefulWidget {
   @override
