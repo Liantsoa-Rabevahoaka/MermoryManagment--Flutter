@@ -2,24 +2,18 @@ import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
 import '../../main.dart';
 import '../../services/auth_service.dart';
+import '../admin/event/event_screen.dart';
 
+import 'package:gestion_de_soutenance/screens/admin/homePage_admin.dart';
 
-import 'package:gestion_de_soutenance/screens/students/indexStudent.dart';
-import 'package:gestion_de_soutenance/screens/students/planningStudent.dart';
-import 'package:gestion_de_soutenance/screens/students/noteStudent.dart';
-
-
-class StudentHomeScreen extends StatefulWidget {
-  final String title;
-  final List<String> items;
-
-  StudentHomeScreen({required this.title, required this.items});
+class AdminHomeScreen extends StatefulWidget {
+  AdminHomeScreen();
 
   @override
-  State<StudentHomeScreen> createState() => _StudentHomeScreenState();
+  State<AdminHomeScreen> createState() => _AdminHomeScreenState();
 }
 
-class _StudentHomeScreenState extends State<StudentHomeScreen> {
+class _AdminHomeScreenState extends State<AdminHomeScreen> {
   int _currentIndex = 0;
   int _counter = 0;
 
@@ -30,18 +24,20 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
   }
 
   static List<Widget> _widgetOptions = <Widget>[
-    IndexStudent(),
-    planningStudent(),
-    NoteStudent(),
+    Index(), // Appelé lorsque vous appuyez sur l'icône "Home"
+    EventScreen(),  // Appelé lorsque vous appuyez sur l'icône "Users"
+    Text(
+      'Index 2: School',
+    ),
+    Text('Index 4: Settings'),
   ];
 
   @override
   Widget build(BuildContext context) {
     AuthService _authService = AuthService();
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text("My memory"),
         actions: [
           // Bouton de déconnexion dans l'app bar
           IconButton(
@@ -58,14 +54,6 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
           ),
         ],
       ),
-      /**body: ListView.builder(
-        itemCount: widget.items.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(widget.items[index]),
-          );
-        },**/
-
       body: Center(child: _widgetOptions.elementAt(_currentIndex)),
       bottomNavigationBar: BottomNavyBar(
         selectedIndex: _currentIndex,
@@ -76,7 +64,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
         items: <BottomNavyBarItem>[
           BottomNavyBarItem(
             icon: Icon(Icons.list),
-            title: Text('Lists'),
+            title: Text('Listes'),
             activeColor: Colors.red,
             textAlign: TextAlign.center,
           ),
@@ -88,8 +76,16 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
           ),
           BottomNavyBarItem(
             icon: Icon(Icons.bar_chart),
-            title: Text('Result'),
+            title: Text(
+              'resultat ',
+            ),
             activeColor: Colors.pink,
+            textAlign: TextAlign.center,
+          ),
+          BottomNavyBarItem(
+            icon: Icon(Icons.settings),
+            title: Text('Settings'),
+            activeColor: Colors.blue,
             textAlign: TextAlign.center,
           ),
         ],

@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:project/models/student_model.dart';
-import 'package:project/models/user_model.dart';
-import 'package:project/screens/admin/student_detail_screen.dart';
+import 'package:gestion_de_soutenance/screens/admin/student_detail_screen.dart';
+import '../../models/user_model.dart';
+import '../../services/jury_service.dart';
 
-import '../../services/student_service.dart';
-
-class CrudStudentScreen extends StatefulWidget {
+class Juryscreen extends StatefulWidget {
   @override
-  _CrudStudentScreenState createState() => _CrudStudentScreenState();
+  _JuryscreenState createState() => _JuryscreenState();
 }
 
-class _CrudStudentScreenState extends State<CrudStudentScreen> {
+class _JuryscreenState extends State<Juryscreen> {
   final StudentService studentService = StudentService();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -20,7 +18,7 @@ class _CrudStudentScreenState extends State<CrudStudentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Student List'),
+        title: Text('Listes des jurys'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -31,7 +29,7 @@ class _CrudStudentScreenState extends State<CrudStudentScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Add Student'),
+                    title: Text('Ajouter un jury'),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -65,30 +63,31 @@ class _CrudStudentScreenState extends State<CrudStudentScreen> {
                             email: email,
                             age: age,
                             password: '',
-                            role: '',
+                            role: 'jury',
                           );
 
                           studentService.addStudent(student);
 
                           Navigator.of(context).pop();
                         },
-                        child: Text('Save'),
+                        child: Text('Enregistrer'),
                       ),
                       ElevatedButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: Text('Cancel'),
+                        child: Text('Annuler'),
                       ),
                     ],
                   );
                 },
               );
             },
-            child: Text('Add Student'),
+            child: Text('Ajouter un jury'),
           ),
           Expanded(
             child: StreamBuilder<List<UserModel>>(
+              //Affichage etudiants
               stream: studentService.getStudents(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
@@ -97,8 +96,10 @@ class _CrudStudentScreenState extends State<CrudStudentScreen> {
                     itemCount: students.length,
                     itemBuilder: (context, index) {
                       return ListTile(
+                        //seulement nom et mail
                         title: Text(students[index].name),
                         subtitle: Text(students[index].email),
+
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -159,7 +160,7 @@ void _showEditDialog(BuildContext context, UserModel student) {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Edit Student'),
+          title: Text('Modifier'),
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -186,7 +187,7 @@ void _showEditDialog(BuildContext context, UserModel student) {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Cancel'),
+              child: Text('Annuler'),
             ),
             TextButton(
               onPressed: () {
@@ -212,10 +213,11 @@ void _showEditDialog(BuildContext context, UserModel student) {
 
                 Navigator.pop(context);
               },
-              child: Text('Save'),
+              child: Text('Enregistrer'),
             ),
           ],
         );
       },
     );
   }
+

@@ -1,81 +1,191 @@
-import 'package:bottom_navy_bar/bottom_navy_bar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
+import '../../main.dart';
 import '../../services/auth_service.dart';
-import '../admin/crud_student_screen.dart';
-import '../auth/signin_screen.dart';
+import '../../models/session_model.dart';
+import '../../services/session_service.dart';
+import '../admin/joinSession.dart';
 
 class AdminHomeScreen extends StatefulWidget {
-  AdminHomeScreen();
-
   @override
-  State<AdminHomeScreen> createState() => _AdminHomeScreenState();
+  _AdminHomeScreenState createState() => _AdminHomeScreenState();
 }
 
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
-  int _currentIndex = 0;
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  static List<Widget> _widgetOptions = <Widget>[
-    CrudStudentScreen(),
-    Text(
-      'Index 1: Business',
-    ),
-    Text(
-      'Index 2: School',
-    ),
-    Text(
-      'Index 3: Settings',
-    ),
-    Text('Index 4: Settings'),
-  ];
+  final SessionService sessionService = SessionService();
+  final TextEditingController anneeController = TextEditingController();
+  final TextEditingController typeController = TextEditingController();
+  final TextEditingController codeController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    AuthService _authService = AuthService();
     return Scaffold(
-      appBar: AppBar(title: Text("Flutter Demo")),
-      body: Center(child: _widgetOptions.elementAt(_currentIndex)),
-      bottomNavigationBar: BottomNavyBar(
-        selectedIndex: _currentIndex,
-        showElevation: true,
-        itemCornerRadius: 24,
-        curve: Curves.easeIn,
-        onItemSelected: (index) => setState(() => _currentIndex = index),
-        items: <BottomNavyBarItem>[
-          BottomNavyBarItem(
-            icon: Icon(Icons.apps),
-            title: Text('Home'),
-            activeColor: Colors.red,
-            textAlign: TextAlign.center,
-          ),
-          BottomNavyBarItem(
-            icon: Icon(Icons.people),
-            title: Text('Users'),
-            activeColor: Colors.purpleAccent,
-            textAlign: TextAlign.center,
-          ),
-          BottomNavyBarItem(
-            icon: Icon(Icons.message),
-            title: Text(
-              'Messages test for mes teset test test ',
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text("My memory"),
+        actions: [
+          IconButton(
+            icon: Row(
+              children: [
+                Icon(Icons
+                    .exit_to_app), /***SizedBox(width: 8), // Espace entre l'icône et le texte
+                  Text('Sign out'),**/
+              ],
             ),
-            activeColor: Colors.pink,
-            textAlign: TextAlign.center,
-          ),
-          BottomNavyBarItem(
-            icon: Icon(Icons.settings),
-            title: Text('Settings'),
-            activeColor: Colors.blue,
-            textAlign: TextAlign.center,
+            onPressed: () => {
+              _authService.signOut(),
+              // use material page route to redirect to the sign in screen
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => MyApp(),
+                ),
+              ),
+            },
           ),
         ],
+      ),
+      body: Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "Bienvenue sur la page de l\' Admin🎓",
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 150, 28, 28),
+                ),
+              ),
+              SizedBox(height: 10), // Ajustement de l'espace
+              Text(
+                "Avez-vous une session de soutenance?",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey[600],
+                ),
+              ),
+              SizedBox(height: 30),
+              _buildColoredButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => joinSessionPage(),
+                    ),
+                  );
+                },
+                icon: Icons.arrow_circle_right,
+                label: "Rejoindre une session",
+                colors: [
+                  Color.fromRGBO(228, 86, 110, 1),
+                  Color.fromRGBO(232, 105, 55, 1)
+                ],
+              ),
+
+              SizedBox(height: 25),
+              _buildColoredButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Ajouter un nouveau session'),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextField(
+                              controller: anneeController,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(labelText: 'Annee'),
+                            ),
+                            SizedBox(height: 16),
+                            TextField(
+                              controller: typeController,
+                              decoration: InputDecoration(labelText: 'Type'),
+                            ),
+                            SizedBox(height: 16),
+                            TextField(
+                              controller: codeController,
+                              decoration: InputDecoration(labelText: 'Code'),
+                            ),
+                          ],
+                        ),
+                        actions: [
+                          ElevatedButton(
+                            onPressed: () {
+                              int annee =
+                                  int.tryParse(anneeController.text) ?? 0;
+                              String code = codeController.text.trim();
+                              String type = typeController.text.trim();
+
+                              SessionModel session = SessionModel(
+                                id: '...',
+                                type:
+                                    type, // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
+                                annee: annee,
+                                code: code, description: '', title: '',
+                              );
+
+                              sessionService.addSession(session);
+
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Ajouter'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Annuler'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                icon: Icons.add_circle,
+                label: "Créer une nouvelle session",
+                colors: [Color.fromRGBO(68, 140, 216, 1), Color(0xFF1FE9F7)],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildColoredButton({
+    required VoidCallback onPressed,
+    required IconData icon,
+    required String label,
+    required List<Color> colors,
+  }) {
+    return Container(
+      width: 300,
+      height: 50,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25),
+        gradient: LinearGradient(
+          colors: colors,
+        ),
+      ),
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, color: Colors.white),
+        label: Text(
+          label,
+          style: TextStyle(fontSize: 18, color: Colors.white),
+        ),
+        style: ElevatedButton.styleFrom(
+          primary: Colors.transparent,
+          onPrimary: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25),
+          ),
+        ),
       ),
     );
   }

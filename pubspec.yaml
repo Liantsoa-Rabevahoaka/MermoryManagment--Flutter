@@ -1,4 +1,4 @@
-name: project
+name: gestion_de_soutenance
 description: A new Flutter project.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -30,31 +30,40 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
-  firebase_core: ^2.15.0
-  firebase_auth: ^4.7.2
   cloud_firestore: ^4.8.4
+  # geoflutterfire: ^3.0.3
+  firebase_auth: ^4.7.2
   shared_preferences: ^2.2.0
   bottom_navy_bar: ^6.0.0
   flutter_launcher_icons: ^0.13.1
-  table_calendar: ^3.0.8
+
+ 
+  curved_navigation_bar: ^1.0.3
+  animator: ^3.3.0
+  table_calendar: ^3.0.9
+  horizontal_data_table: ^4.3.1
+  # roundcheckbox: ^2.0.5
+  readmore: ^2.2.0
+  cupertino_icons: ^1.0.2
+  firebase_core: ^2.15.0
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  flutter_launcher_icons: "^0.13.1"
+  flutter_launcher_icons: ^0.13.1
 
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "images/0123.jpg"
+  image_path: "assets/images/logo.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
+    
+  
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+ 
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -75,8 +84,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - images/
+    - assets/images/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

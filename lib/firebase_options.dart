@@ -44,39 +44,39 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDdD3RCF73r77RS1fVELVIhoPQ-mw8yf6M',
-    appId: '1:40722409823:web:c74c16189afa2f3ae02eea',
-    messagingSenderId: '40722409823',
-    projectId: 'soutenance-c3469',
-    authDomain: 'soutenance-c3469.firebaseapp.com',
-    storageBucket: 'soutenance-c3469.appspot.com',
+    apiKey: 'AIzaSyC9izRO2VIgEfvy5PY7b6NbZTpbSeo1WxI',
+    appId: '1:616392994996:web:3f5521ba0a13e0df0167e1',
+    messagingSenderId: '616392994996',
+    projectId: 'gestion-soutenance',
+    authDomain: 'gestion-soutenance.firebaseapp.com',
+    storageBucket: 'gestion-soutenance.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBM-eyKsFH_acNg3ZRX-Ztnq4OcGiY1XUc',
-    appId: '1:40722409823:android:077905e354a80a84e02eea',
-    messagingSenderId: '40722409823',
-    projectId: 'soutenance-c3469',
-    storageBucket: 'soutenance-c3469.appspot.com',
+    apiKey: 'AIzaSyAp6Cjjz7L_6AC7az4ii_GF7morrxH3TnY',
+    appId: '1:616392994996:android:89bdbd5071e0c0400167e1',
+    messagingSenderId: '616392994996',
+    projectId: 'gestion-soutenance',
+    storageBucket: 'gestion-soutenance.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBJMT2fFaC4lTl_GgU13Mv6W17i1YFT2HA',
-    appId: '1:40722409823:ios:d30f56a93d4ab833e02eea',
-    messagingSenderId: '40722409823',
-    projectId: 'soutenance-c3469',
-    storageBucket: 'soutenance-c3469.appspot.com',
-    iosClientId: '40722409823-fr6olt9a35o1lfu08agg9j5jr52i2dba.apps.googleusercontent.com',
-    iosBundleId: 'com.example.project',
+    apiKey: 'AIzaSyD_vpsfE708TtZ97UVb_LhvydIq5AXS7C0',
+    appId: '1:616392994996:ios:02338ac8b6b9be380167e1',
+    messagingSenderId: '616392994996',
+    projectId: 'gestion-soutenance',
+    storageBucket: 'gestion-soutenance.appspot.com',
+    iosClientId: '616392994996-4qs7jcokvpcchttudq4a2aunlnsihhpl.apps.googleusercontent.com',
+    iosBundleId: 'com.example.gestionDeSoutenance',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBJMT2fFaC4lTl_GgU13Mv6W17i1YFT2HA',
-    appId: '1:40722409823:ios:47a54294439dfbf5e02eea',
-    messagingSenderId: '40722409823',
-    projectId: 'soutenance-c3469',
-    storageBucket: 'soutenance-c3469.appspot.com',
-    iosClientId: '40722409823-9l7fvfemgggnf6s8v2m2lv7tuin2k0ul.apps.googleusercontent.com',
-    iosBundleId: 'com.example.project.RunnerTests',
+    apiKey: 'AIzaSyD_vpsfE708TtZ97UVb_LhvydIq5AXS7C0',
+    appId: '1:616392994996:ios:fdde538c05d6a6630167e1',
+    messagingSenderId: '616392994996',
+    projectId: 'gestion-soutenance',
+    storageBucket: 'gestion-soutenance.appspot.com',
+    iosClientId: '616392994996-vh1g2t4dvsedcddco9uhv3knlje1oq1d.apps.googleusercontent.com',
+    iosBundleId: 'com.example.gestionDeSoutenance.RunnerTests',
   );
 }

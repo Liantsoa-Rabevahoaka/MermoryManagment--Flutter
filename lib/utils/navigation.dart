@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:project/screens/home/admin_home_screen.dart';
-import 'package:project/services/auth_service.dart';
-
+import '../screens/home/admin_home_screen.dart';
 import '../screens/home/student_home_screen.dart';
+import '../services/auth_service.dart';
 
 Future<void> handleLoggedInUser(bool isLoggedIn, BuildContext context) async {
   AuthService _authService = AuthService();
@@ -31,6 +30,8 @@ Future<void> handleLoggedInUser(bool isLoggedIn, BuildContext context) async {
       } else if (user.role == 'teacher') {
         // Redirigez l'utilisateur vers une autre page car il est déjà connecté
         print('User is teacher');
+      } else {
+        print('Verifier Adresse emmail et votre mot de passe');
       }
     }
   });
