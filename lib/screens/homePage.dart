@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_de_soutenance/screens/authentification/login_screen.dart';
 import '../services/auth_service.dart';
 import '../utils/navigation.dart';
-
-import 'authentification/login.dart';
-import 'authentification/register.dart';
+import 'authentification/register_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -36,7 +35,7 @@ class _HomePageState extends State<HomePage> {
         if (isLoggedIn) {
           handleLoggedInUser(isLoggedIn, context);
         } else {
-          return visible ? Login(toggle) : Register(toggle);
+          return visible ? LoginScreen() : RegisterScreen();
         }
 
         return CircularProgressIndicator();

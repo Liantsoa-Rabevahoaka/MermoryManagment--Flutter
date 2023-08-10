@@ -52,7 +52,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Bienvenue sur la page de l\' Admin🎓",
+                "Bienvenue ddd  ss sur la page de l\' Admin🎓",
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,

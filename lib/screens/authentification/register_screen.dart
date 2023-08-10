@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../models/customTextField.dart';
 
-class Register extends StatefulWidget {
-  final Function visible;
-  Register(this.visible);
-
+class RegisterScreen extends StatefulWidget {
   @override
-  State<Register> createState() => _RegisterState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterState extends State<Register> {
+class _RegisterScreenState extends State<RegisterScreen> {
   CustomTextField emailText =
       CustomTextField(title: 'Email', placeholder: 'Enter your email');
   CustomTextField passText =
@@ -32,7 +29,7 @@ class _RegisterState extends State<Register> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text(
-                    'Register',
+                    'RegisterScreen',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontSize: 30,
@@ -67,22 +64,9 @@ class _RegisterState extends State<Register> {
                       ),
                     ),
                     child: const Text(
-                      'Register',
+                      'RegisterScreen',
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('Avez-vous un compte?'),
-                      TextButton(
-                        onPressed: widget.visible as void Function()?,
-                        child: const Text(
-                          'Login',
-                          style: TextStyle(color: Colors.redAccent),
-                        ),
-                      )
-                    ],
                   ),
                 ],
               ),
