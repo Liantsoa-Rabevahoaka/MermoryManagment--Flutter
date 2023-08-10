@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_de_soutenance/providers/user_provider.dart';
+import 'package:gestion_de_soutenance/utils/navigation.dart';
+import 'package:provider/provider.dart';
 
-import '../../components/buttons/custom_button.dart'; // Replace with the actual file path
+import '../../components/buttons/custom_button.dart';
+import '../../models/user_model.dart'; // Replace with the actual file path
 
 class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    UserModel? user = userProvider.user ?? null;
+
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Welcome to MyApp!',
+              'Welcome to MyApp!' + (user != null ? ' ${user.name}' : ''),
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
@@ -42,8 +50,16 @@ class WelcomeScreen extends StatelessWidget {
                   icon: Icons.arrow_forward,
                   text: 'Skip',
                   onPressed: () {
-                    // Redirect to home screen
-                    // Add your navigation code here
+                    redirectUserToHome(
+                        user ??
+                            UserModel(
+                                id: 'id',
+                                name: 'name',
+                                email: 'email',
+                                role: 'role',
+                                password: 'password',
+                                age: 2),
+                        context);
                   },
                 ),
               ],

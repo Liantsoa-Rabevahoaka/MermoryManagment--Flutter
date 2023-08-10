@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/session_model.dart';
 import '../../services/session_service.dart';
-import 'index_list.dart';
+import 'admin_root_screen.dart';
 
 class joinSessionPage extends StatelessWidget {
   final SessionService sessionService = SessionService();
@@ -37,7 +37,7 @@ class joinSessionPage extends StatelessWidget {
                                   onPressed: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) => AdminHomeScreen(),
+                                        builder: (context) => AdminRootScreen(),
                                       ),
                                     );
                                   }),

@@ -50,7 +50,7 @@ class AuthService {
 
         return UserModel(
           id: '',
-          name: '',
+          name: userData.docs[0].get('name'),
           email: user.email!,
           role: userData.docs[0].get('role'),
           age: 22,

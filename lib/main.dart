@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:gestion_de_soutenance/components/loader/loader.dart';
+import 'package:gestion_de_soutenance/providers/user_provider.dart';
 import 'package:gestion_de_soutenance/screens/authentification/login_screen.dart';
 import 'package:gestion_de_soutenance/utils/navigation.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'services/auth_service.dart';
 
@@ -20,14 +22,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (context) => UserProvider(),
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: HomePage(),
       ),
-      home: HomePage(),
     );
   }
 }
@@ -42,7 +47,7 @@ class HomePage extends StatelessWidget {
       future: _authService.isLoggedIn(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // Affichez un indicateur de chargement si nécessaire
+          return Loader(); // Affichez un indicateur de chargement si nécessaire
         }
 
         final isLoggedIn = snapshot.data ?? false;

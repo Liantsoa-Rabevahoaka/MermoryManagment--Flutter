@@ -6,14 +6,14 @@ import '../admin/event/event_screen.dart';
 
 import 'homePage_admin.dart';
 
-class AdminHomeScreen extends StatefulWidget {
-  AdminHomeScreen();
+class AdminRootScreen extends StatefulWidget {
+  AdminRootScreen();
 
   @override
-  State<AdminHomeScreen> createState() => _AdminHomeScreenState();
+  State<AdminRootScreen> createState() => _AdminRootScreenState();
 }
 
-class _AdminHomeScreenState extends State<AdminHomeScreen> {
+class _AdminRootScreenState extends State<AdminRootScreen> {
   int _currentIndex = 0;
   int _counter = 0;
 

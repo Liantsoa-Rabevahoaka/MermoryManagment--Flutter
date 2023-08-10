@@ -75,7 +75,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (_key.currentState?.validate() ?? false) {
                                   User? user = await _authService
                                       .signInWithEmail(email, password);
-                                  handleLoggedInUser(true, context);
+
+                                  if (user != null) {
+                                    await handleLoggedInUser(true, context);
+                                  }
                                 }
                                 setState(() {
                                   _isLoaderVisible = false;
@@ -84,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 setState(() {
                                   _isLoaderVisible = false;
                                 });
-                                print(e);
+                                print('LoginScreen Error: $e');
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -107,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ],
           ),
-          Visibility(child: Loader(), visible: false),
+          Visibility(child: Loader(), visible: _isLoaderVisible),
         ]),
       ),
     );
