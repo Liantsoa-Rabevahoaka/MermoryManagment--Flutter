@@ -28,9 +28,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           IconButton(
             icon: Row(
               children: [
-                Icon(Icons
-                    .exit_to_app), /***SizedBox(width: 8), // Espace entre l'icône et le texte
-                  Text('Sign out'),**/
+                Icon(Icons.exit_to_app),
               ],
             ),
             onPressed: () => {

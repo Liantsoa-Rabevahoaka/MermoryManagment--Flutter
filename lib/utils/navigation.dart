@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gestion_de_soutenance/screens/welcome/welcome_screen.dart';
 import '../screens/home/admin_home_screen.dart';
 import '../screens/home/student_home_screen.dart';
 import '../services/auth_service.dart';
@@ -25,7 +26,7 @@ Future<void> handleLoggedInUser(bool isLoggedIn, BuildContext context) async {
         // Redirigez l'utilisateur vers une autre page car il est déjà connecté
         print('User is admin');
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => AdminHomeScreen()),
+          MaterialPageRoute(builder: (context) => WelcomeScreen()),
         );
       } else if (user.role == 'teacher') {
         // Redirigez l'utilisateur vers une autre page car il est déjà connecté
