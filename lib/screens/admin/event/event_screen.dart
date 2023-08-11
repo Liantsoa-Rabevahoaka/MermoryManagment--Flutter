@@ -141,7 +141,7 @@ class _EventScreenState extends State<EventScreen> {
           ..._getEventsForTheDay(_selectedDay).map(
             (event) => EventItem(
               event: event,
-              onTap: () async {
+              onEdit: () async {
                 final res = await Navigator.push<bool>(
                   context,
                   MaterialPageRoute(

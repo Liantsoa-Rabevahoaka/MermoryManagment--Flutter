@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gestion_de_soutenance/components/pickers/date_picker.dart';
+import 'package:gestion_de_soutenance/components/pickers/time_picker.dart';
 import 'package:gestion_de_soutenance/services/session_service.dart';
 import 'package:gestion_de_soutenance/utils/random.dart';
 import '../../../models/session_model.dart';
@@ -26,20 +27,32 @@ class _AddEventState extends State<AddEvent> {
   bool _isLoaderVisible = false;
 
   DateTime currentDate = DateTime.now();
-  final TextEditingController _timeController = TextEditingController();
+  DateTime selectedTime = DateTime.now();
+
   final TextEditingController _durationController = TextEditingController();
   final TextEditingController _lcoationController = TextEditingController();
 
   @override
   void initState() {
-    // TODO: implement initState
     currentDate = widget.selectedDate;
     super.initState();
   }
 
+  void updateCurrentDate(DateTime newDate) {
+    setState(() {
+      currentDate = newDate;
+    });
+    widget.updateSelectedDate(newDate);
+  }
+
+  void updateSelectedTime(DateTime newTime) {
+    setState(() {
+      selectedTime = newTime;
+    });
+  }
+
   @override
   void dispose() {
-    _timeController.dispose();
     _durationController.dispose();
     _lcoationController.dispose();
     super.dispose();
@@ -48,7 +61,6 @@ class _AddEventState extends State<AddEvent> {
   // create a function to validate the form and save the data
   void _saveEvent() async {
     try {
-      final String time = _timeController.text;
       final String duration = _durationController.text;
       final String location = _lcoationController.text;
 
@@ -57,12 +69,12 @@ class _AddEventState extends State<AddEvent> {
       });
 
       // check if the form is valid
-      if (time.isNotEmpty && duration.isNotEmpty && location.isNotEmpty) {
+      if (duration.isNotEmpty && location.isNotEmpty) {
         await _sessionService.addSession(SessionModel(
           id: RandomUtils.generateId(),
           title: '',
-          date: widget.selectedDate,
-          time: time,
+          date: currentDate,
+          time: selectedTime.toString(),
           duration: int.parse(duration),
           location: location,
         ));
@@ -91,21 +103,13 @@ class _AddEventState extends State<AddEvent> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ChildWidget(
+            DatePicker(
                 selectedDate: widget.selectedDate,
-                updateSelectedDate: widget.updateSelectedDate),
-            Text(
-              "${currentDate.toLocal()}".split(' ')[0],
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black),
-            ),
+                updateSelectedDate: updateCurrentDate),
             SizedBox(height: 16),
-            TextField(
-              controller: _timeController,
-              decoration: InputDecoration(labelText: 'Heure de debut'),
-            ),
+            TimePicker(
+                selectedTime: selectedTime,
+                updateSelectedTime: updateSelectedTime),
             TextField(
               controller: _durationController,
               keyboardType: TextInputType.number,

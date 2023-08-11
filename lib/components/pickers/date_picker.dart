@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-class ChildWidget extends StatefulWidget {
+class DatePicker extends StatefulWidget {
   final DateTime selectedDate;
   final Function(DateTime) updateSelectedDate;
 
-  ChildWidget({required this.selectedDate, required this.updateSelectedDate});
+  DatePicker({required this.selectedDate, required this.updateSelectedDate});
 
   @override
-  State<ChildWidget> createState() => _ChildWidgetState();
+  State<DatePicker> createState() => _DatePickerState();
 }
 
-class _ChildWidgetState extends State<ChildWidget> {
+class _DatePickerState extends State<DatePicker> {
   DateTime currentDate = DateTime.now();
 
   @override
@@ -41,7 +41,7 @@ class _ChildWidgetState extends State<ChildWidget> {
     return Column(
       children: [
         Text(
-          'Title',
+          'Date de soutenance',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 8),
