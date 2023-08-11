@@ -2,6 +2,9 @@ import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gestion_de_soutenance/models/user_model.dart';
+import 'package:gestion_de_soutenance/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 import '../../../models/session_model.dart';
 
 import 'package:table_calendar/table_calendar.dart';
@@ -26,7 +29,7 @@ class _EventScreenState extends State<EventScreen> {
   late DateTime _lastDay;
   late DateTime _selectedDay;
   late CalendarFormat _calendarFormat;
-  late Map<DateTime, List<Event>> _events;
+  late Map<DateTime, List<SessionModel>> _events;
 
   int getHashCode(DateTime key) {
     return key.day * 1000000 + key.month * 10000 + key.year;
@@ -44,6 +47,7 @@ class _EventScreenState extends State<EventScreen> {
     _lastDay = DateTime.now().add(const Duration(days: 1000));
     _selectedDay = DateTime.now();
     _calendarFormat = CalendarFormat.month;
+
     _loadFirestoreEvents();
   }
 
@@ -53,12 +57,12 @@ class _EventScreenState extends State<EventScreen> {
     _events = {};
 
     final snap = await FirebaseFirestore.instance
-        .collection('events')
+        .collection('Sessions')
         .where('date', isGreaterThanOrEqualTo: firstDay)
         .where('date', isLessThanOrEqualTo: lastDay)
         .withConverter(
-            fromFirestore: Event.fromFirestore,
-            toFirestore: (event, options) => event.toFirestore())
+            fromFirestore: SessionModel.fromFirestore,
+            toFirestore: (event, options) => event.ToFirestore())
         .get();
     for (var doc in snap.docs) {
       final event = doc.data();
@@ -72,14 +76,24 @@ class _EventScreenState extends State<EventScreen> {
     setState(() {});
   }
 
-  List<Event> _getEventsForTheDay(DateTime day) {
+  List<SessionModel> _getEventsForTheDay(DateTime day) {
     return _events[day] ?? [];
+  }
+
+  void updateSelectedDate(DateTime newDate) {
+    setState(() {
+      _selectedDay = newDate;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    UserModel? user = userProvider.user ?? null;
+
     return Scaffold(
-      body: ListView(
+      body: Column(
         children: [
           TableCalendar(
             eventLoader: _getEventsForTheDay,
@@ -184,11 +198,15 @@ class _EventScreenState extends State<EventScreen> {
               if (snapshot.hasData) {
                 List<SessionModel> events = snapshot.data!;
                 return ListView.builder(
+                  shrinkWrap: true,
+                  physics: ClampingScrollPhysics(),
                   itemCount: events.length,
                   itemBuilder: (context, index) {
+                    SessionModel event = events[index];
+
                     return ListTile(
-                      title: Text(events[index].title),
-                      subtitle: Text(events[index].description),
+                      title: Text(event.title ?? 'Disponible'),
+                      subtitle: Text(event.date.toString()),
                       // Affichez d'autres détails de l'événement
                     );
                   },
@@ -202,24 +220,24 @@ class _EventScreenState extends State<EventScreen> {
           )
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push<bool>(
-            context,
-            MaterialPageRoute(
-              builder: (_) => AddEvent(
-                firstDate: _firstDay,
-                lastDate: _lastDay,
-                selectedDate: _selectedDay,
-              ),
-            ),
-          );
-          if (result ?? false) {
-            _loadFirestoreEvents();
-          }
-        },
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: (user != null && user.role == 'admin')
+          ? FloatingActionButton(
+              onPressed: () async {
+                Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddEvent(
+                      firstDate: _firstDay,
+                      lastDate: _lastDay,
+                      selectedDate: _selectedDay,
+                      updateSelectedDate: updateSelectedDate,
+                    ),
+                  ),
+                );
+              },
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 }

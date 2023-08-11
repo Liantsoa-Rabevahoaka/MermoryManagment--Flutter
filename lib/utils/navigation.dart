@@ -6,7 +6,6 @@ import 'package:gestion_de_soutenance/screens/welcome/welcome_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/user_provider.dart';
-import '../screens/home/admin_home_screen.dart';
 import '../screens/home/student_home_screen.dart';
 import '../services/auth_service.dart';
 

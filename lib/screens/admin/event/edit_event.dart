@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gestion_de_soutenance/models/session_model.dart';
 import '../../../models/event.dart';
 
 class EditEvent extends StatefulWidget {
   final DateTime firstDate;
   final DateTime lastDate;
-  final Event event;
+  final SessionModel event;
 
   const EditEvent({
     required this.firstDate,
@@ -27,7 +28,7 @@ class _EditEventState extends State<EditEvent> {
     super.initState();
     _selectedDate = widget.event.date;
     _titleController = TextEditingController(text: widget.event.title);
-    _descriptionController = TextEditingController(text: widget.event.description);
+    _descriptionController = TextEditingController(text: widget.event.location);
   }
 
   @override
@@ -71,12 +72,12 @@ class _EditEventState extends State<EditEvent> {
   void _updateEvent() async {
     final title = _titleController.text.trim();
     final description = _descriptionController.text.trim();
-    
+
     if (title.isEmpty) {
       print('Title cannot be empty');
       return;
     }
-    
+
     await FirebaseFirestore.instance
         .collection('events')
         .doc(widget.event.id)

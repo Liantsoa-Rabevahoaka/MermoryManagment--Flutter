@@ -1,18 +1,40 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class SessionModel {
-  final String id;
-  final int annee;
-  final String type;
-  final String code;
-  final String title;
-  final String description;
-
-  SessionModel (
-      {required this.id,
-        required this.annee,
-        required this.type,
-        required this.title,
-        required this.description,
-        required this.code});
-
-
+  String id;
+  String? title;
+  DateTime date;
+  String time;
+  int duration;
+  String location;
+  SessionModel({
+    required this.id,
+    this.title,
+    required this.date,
+    required this.time,
+    required this.duration,
+    required this.location,
+  });
+  factory SessionModel.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> snapshot,
+      [SnapshotOptions? options]) {
+    final data = snapshot.data()!;
+    return SessionModel(
+      id: snapshot.id,
+      title: data['title'] ?? '',
+      date: data['date'].toDate(),
+      time: data['time'] ?? '',
+      duration: data['duration'] ?? 0,
+      location: data['location'] ?? '',
+    );
+  }
+  Map<String, Object?> ToFirestore() {
+    return {
+      'title': title,
+      'date': Timestamp.fromDate(date),
+      'time': time,
+      'duration': duration,
+      'location': location,
+    };
+  }
 }

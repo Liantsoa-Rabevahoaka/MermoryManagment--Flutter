@@ -4,15 +4,11 @@ import '../models/session_model.dart';
 
 class SessionService {
   final CollectionReference _sessionCollection =
-      FirebaseFirestore.instance.collection('Session');
+      FirebaseFirestore.instance.collection('Sessions');
 
   Future<void> addSession(SessionModel session) async {
     try {
-      await _sessionCollection.doc(session.id).set({
-        'annee': session.annee,
-        'type': session.type,
-        'code': session.code,
-      });
+      await _sessionCollection.doc().set(session.ToFirestore());
     } catch (e) {
       print(' Error adding session: $e');
     }
@@ -25,16 +21,11 @@ class SessionService {
       return snapshot.docs.map((doc) {
         return SessionModel(
           id: doc.id,
-          annee: doc[
-              'annee'], // Assurez-vous que 'annee' est du type attendu dans SessionModel
-          type: doc[
-              'type'], // Assurez-vous que 'type' est du type attendu dans SessionModel
-          title: doc[
-              'title'], // Assurez-vous que 'type' est du type attendu dans SessionModel
-          description: doc[
-              'description'], // Assurez-vous que 'type' est du type attendu dans SessionModel
-          code: doc[
-              'code'], // Assurez-vous que 'code' est du type attendu dans SessionModel
+          title: doc['title'] ?? '',
+          date: doc['date'].toDate() ?? '',
+          time: doc['time'] ?? '',
+          duration: doc['duration'] ?? '',
+          location: doc['location'] ?? '',
         );
       }).toList();
     });
