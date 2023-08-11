@@ -1,92 +1,159 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/models/session_model.dart';
-import '../../../models/event.dart';
+import 'package:gestion_de_soutenance/components/pickers/date_picker.dart';
+import 'package:gestion_de_soutenance/components/pickers/time_picker.dart';
+import 'package:gestion_de_soutenance/services/session_service.dart';
+import 'package:gestion_de_soutenance/utils/auth.dart';
+import 'package:gestion_de_soutenance/utils/dates.dart';
+import 'package:gestion_de_soutenance/utils/random.dart';
+import '../../../models/session_model.dart';
 
 class EditEvent extends StatefulWidget {
   final DateTime firstDate;
   final DateTime lastDate;
-  final SessionModel event;
+  final SessionModel sessionModel;
+  final Function(DateTime) updateSelectedDate;
 
   const EditEvent({
     required this.firstDate,
     required this.lastDate,
-    required this.event,
+    required this.sessionModel,
+    required this.updateSelectedDate,
   });
 
   @override
-  State<EditEvent> createState() => _EditEventState();
+  _EditEventState createState() => _EditEventState();
 }
 
 class _EditEventState extends State<EditEvent> {
-  late DateTime _selectedDate;
-  late TextEditingController _titleController;
-  late TextEditingController _descriptionController;
+  SessionService _sessionService = SessionService();
+  bool _isLoaderVisible = false;
+
+  DateTime currentDate = DateTime.now();
+  DateTime selectedTime = DateTime.now();
+
+  late TextEditingController _durationController;
+  late TextEditingController _lcoationController;
 
   @override
   void initState() {
+    currentDate = widget.sessionModel.date;
+    _durationController = TextEditingController(
+      text: widget.sessionModel.duration.toString(),
+    );
+    _lcoationController = TextEditingController(
+      text: widget.sessionModel.location,
+    );
     super.initState();
-    _selectedDate = widget.event.date;
-    _titleController = TextEditingController(text: widget.event.title);
-    _descriptionController = TextEditingController(text: widget.event.location);
+  }
+
+  void updateCurrentDate(DateTime newDate) {
+    setState(() {
+      currentDate = newDate;
+    });
+    widget.updateSelectedDate(newDate);
+  }
+
+  void updateSelectedTime(DateTime newTime) {
+    setState(() {
+      selectedTime = newTime;
+    });
+  }
+
+  @override
+  void dispose() {
+    _durationController.dispose();
+    _lcoationController.dispose();
+    super.dispose();
+  }
+
+  // create a function to validate the form and save the data
+  void _saveEvent() async {
+    try {
+      if (isAdmin(context)) {
+        _editEvent();
+      } else if (isStudent(context)) {}
+    } on Exception catch (e) {
+      setState(() {
+        _isLoaderVisible = false;
+      });
+
+      print('EditEvent Error: $e');
+    }
+  }
+
+  Future<void> _editEvent() async {
+    final String duration = _durationController.text;
+    final String location = _lcoationController.text;
+
+    setState(() {
+      _isLoaderVisible = true;
+    });
+
+    // check if the form is valid
+    if (duration.isNotEmpty && location.isNotEmpty) {
+      final res = SessionModel(
+        id: widget.sessionModel.id,
+        title: '',
+        date: currentDate,
+        time: selectedTime.toString(),
+        duration: int.parse(duration),
+        location: location,
+      );
+
+      await _sessionService.updateSession(
+        res,
+      );
+
+      setState(() {
+        _isLoaderVisible = false;
+      });
+
+      Navigator.pop(context, true);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Edit Event")),
-      body: ListView(
+      appBar: AppBar(title: Text('Add Event')),
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
-        children: [
-          InputDatePickerFormField(
-            firstDate: widget.firstDate,
-            lastDate: widget.lastDate,
-            initialDate: _selectedDate,
-            onDateSubmitted: (date) {
-              setState(() {
-                _selectedDate = date;
-              });
-            },
-          ),
-          TextField(
-            controller: _titleController,
-            maxLines: 1,
-            decoration: const InputDecoration(labelText: 'Title'),
-          ),
-          TextField(
-            controller: _descriptionController,
-            maxLines: 5,
-            decoration: const InputDecoration(labelText: 'Description'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              _updateEvent();
-            },
-            child: const Text("Save"),
-          ),
-        ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DatePicker(
+                enabled: isAdmin(context),
+                selectedDate: widget.sessionModel.date,
+                updateSelectedDate: updateCurrentDate),
+            SizedBox(height: 16),
+            TimePicker(
+                enabled: isAdmin(context),
+                selectedTime: DateUtil.parseDateTime(widget.sessionModel.time),
+                updateSelectedTime: updateSelectedTime),
+            TextField(
+              enabled: isAdmin(context),
+              controller: _durationController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Duree en heure'),
+            ),
+            TextField(
+              enabled: isAdmin(context),
+              controller: _lcoationController,
+              decoration: InputDecoration(labelText: 'Lieu'),
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+                onPressed: () {
+                  _saveEvent();
+                },
+                child: Text(isAdmin(context)
+                    ? 'Modifier'
+                    : isStudent(context)
+                        ? 'S\'inscrire '
+                        : 'Noter')),
+          ],
+        ),
       ),
     );
-  }
-
-  void _updateEvent() async {
-    final title = _titleController.text.trim();
-    final description = _descriptionController.text.trim();
-
-    if (title.isEmpty) {
-      print('Title cannot be empty');
-      return;
-    }
-
-    await FirebaseFirestore.instance
-        .collection('events')
-        .doc(widget.event.id)
-        .update({
-      "title": title,
-      "description": description,
-      "date": _selectedDate,
-    });
-
-    Navigator.pop<bool>(context, true);
   }
 }

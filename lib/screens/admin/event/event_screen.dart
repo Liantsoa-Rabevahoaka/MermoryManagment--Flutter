@@ -86,6 +86,76 @@ class _EventScreenState extends State<EventScreen> {
     });
   }
 
+  // Inside the build method of EventScreen
+  Future<void> _navigateToAddEventScreen() async {
+    final shouldReload = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddEvent(
+          firstDate: _firstDay,
+          lastDate: _lastDay,
+          selectedDate: _selectedDay,
+          updateSelectedDate: updateSelectedDate,
+        ),
+      ),
+    );
+
+    if (shouldReload ?? false) {
+      _loadFirestoreEvents(); // Reload events if shouldReload is true
+    }
+  }
+
+  Future<void> onDelete(SessionModel event) async {
+    try {
+      final delete = await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Delete Event?"),
+          content: const Text("Are you sure you want to delete?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.black,
+              ),
+              child: const Text("No"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.red,
+              ),
+              child: const Text("Yes"),
+            ),
+          ],
+        ),
+      );
+      if (delete ?? false) {
+        await SessionService().deleteSession(event.id);
+        _loadFirestoreEvents();
+      }
+    } catch (e) {
+      print('onDelete Error: $e');
+    }
+  }
+
+  Future<void> _redirectToSessionDetails(SessionModel session) async {
+    final res = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EditEvent(
+          firstDate: _firstDay,
+          lastDate: _lastDay,
+          sessionModel: session,
+          updateSelectedDate: updateSelectedDate,
+        ),
+      ),
+    );
+    if (res ?? false) {
+      _loadFirestoreEvents();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     UserProvider userProvider =
@@ -138,102 +208,42 @@ class _EventScreenState extends State<EventScreen> {
               },
             ),
           ),
-          ..._getEventsForTheDay(_selectedDay).map(
-            (event) => EventItem(
-              event: event,
-              onEdit: () async {
-                final res = await Navigator.push<bool>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => EditEvent(
-                      firstDate: _firstDay,
-                      lastDate: _lastDay,
+          const SizedBox(
+            height: 50.0,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListView.separated(
+                shrinkWrap: true,
+                physics: ClampingScrollPhysics(),
+                separatorBuilder: (context, index) => const SizedBox(
+                  height: 6.0,
+                ),
+                itemCount: _getEventsForTheDay(_selectedDay).length,
+                itemBuilder: (context, index) {
+                  final event = _getEventsForTheDay(_selectedDay)[index];
+                  return GestureDetector(
+                    onTap: () async {
+                      _redirectToSessionDetails(event);
+                    },
+                    child: EventItem(
                       event: event,
+                      onDelete: () async {
+                        onDelete(event);
+                      },
                     ),
-                  ),
-                );
-                if (res ?? false) {
-                  _loadFirestoreEvents();
-                }
-              },
-              onDelete: () async {
-                final delete = await showDialog<bool>(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    title: const Text("Delete Event?"),
-                    content: const Text("Are you sure you want to delete?"),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, false),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.black,
-                        ),
-                        child: const Text("No"),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, true),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.red,
-                        ),
-                        child: const Text("Yes"),
-                      ),
-                    ],
-                  ),
-                );
-                if (delete ?? false) {
-                  await FirebaseFirestore.instance
-                      .collection('events')
-                      .doc(event.id)
-                      .delete();
-                  _loadFirestoreEvents();
-                }
-              },
+                  );
+                },
+              ),
             ),
           ),
-
-          //Recupere et affiche la liste des sessions
-          StreamBuilder<List<SessionModel>>(
-            stream: SessionService().getSession(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                List<SessionModel> events = snapshot.data!;
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: ClampingScrollPhysics(),
-                  itemCount: events.length,
-                  itemBuilder: (context, index) {
-                    SessionModel event = events[index];
-
-                    return ListTile(
-                      title: Text(event.title ?? 'Disponible'),
-                      subtitle: Text(event.date.toString()),
-                      // Affichez d'autres détails de l'événement
-                    );
-                  },
-                );
-              } else if (snapshot.hasError) {
-                return Text('Erreur : ${snapshot.error}');
-              } else {
-                return CircularProgressIndicator(); // Indicateur de chargement
-              }
-            },
-          )
         ],
       ),
       floatingActionButton: (user != null && user.role == 'admin')
           ? FloatingActionButton(
               onPressed: () async {
-                Navigator.push<bool>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AddEvent(
-                      firstDate: _firstDay,
-                      lastDate: _lastDay,
-                      selectedDate: _selectedDay,
-                      updateSelectedDate: updateSelectedDate,
-                    ),
-                  ),
-                );
+                _navigateToAddEventScreen();
               },
               child: const Icon(Icons.add),
             )

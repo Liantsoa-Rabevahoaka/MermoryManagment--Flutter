@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
 class DatePicker extends StatefulWidget {
+  final bool? enabled;
   final DateTime selectedDate;
   final Function(DateTime) updateSelectedDate;
 
-  DatePicker({required this.selectedDate, required this.updateSelectedDate});
+  DatePicker(
+      {this.enabled = true,
+      required this.selectedDate,
+      required this.updateSelectedDate});
 
   @override
   State<DatePicker> createState() => _DatePickerState();
@@ -46,7 +50,7 @@ class _DatePickerState extends State<DatePicker> {
         ),
         SizedBox(height: 8),
         GestureDetector(
-          onTap: () => _selectDate(context),
+          onTap: () => widget.enabled ?? true ? _selectDate(context) : null,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

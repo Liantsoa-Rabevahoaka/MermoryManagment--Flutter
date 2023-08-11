@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class TimePicker extends StatefulWidget {
+  final bool? enabled;
   final DateTime selectedTime;
   final Function(DateTime) updateSelectedTime;
 
-  TimePicker({required this.selectedTime, required this.updateSelectedTime});
+  TimePicker(
+      {this.enabled = true,
+      required this.selectedTime,
+      required this.updateSelectedTime});
 
   @override
   State<TimePicker> createState() => _TimePickerState();
@@ -51,7 +55,7 @@ class _TimePickerState extends State<TimePicker> {
         ),
         SizedBox(height: 8),
         GestureDetector(
-          onTap: () => _selectTime(context),
+          onTap: () => widget.enabled ?? true ? _selectTime(context) : null,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

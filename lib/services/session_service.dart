@@ -30,4 +30,20 @@ class SessionService {
       }).toList();
     });
   }
+
+  Future<void> updateSession(SessionModel session) async {
+    try {
+      await _sessionCollection.doc(session.id).update(session.ToFirestore());
+    } catch (e) {
+      print('Error updating session: $e');
+    }
+  }
+
+  Future<void> deleteSession(String id) async {
+    try {
+      await _sessionCollection.doc(id).delete();
+    } catch (e) {
+      print('Error deleting session: $e');
+    }
+  }
 }

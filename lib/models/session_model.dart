@@ -37,4 +37,15 @@ class SessionModel {
       'location': location,
     };
   }
+
+  Map<String, Object?> ToEditFirestore() {
+    return {
+      'id': id,
+      'title': title,
+      'date': Timestamp.fromDate(date),
+      'time': time,
+      'duration': duration,
+      'location': location,
+    };
+  }
 }

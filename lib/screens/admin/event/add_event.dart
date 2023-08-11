@@ -83,7 +83,7 @@ class _AddEventState extends State<AddEvent> {
           _isLoaderVisible = false;
         });
 
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       }
     } on Exception catch (e) {
       setState(() {

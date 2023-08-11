@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../main.dart';
 import '../../services/auth_service.dart';
 
+import '../admin/event/event_screen.dart';
 import '../students/indexStudent.dart';
 import '../students/planningStudent.dart';
 import '../students/noteStudent.dart';
@@ -29,7 +30,8 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
   static List<Widget> _widgetOptions = <Widget>[
     IndexStudent(),
-    planningStudent(),
+    EventScreen(),
+    // planningStudent(),
     NoteStudent(),
   ];
 
@@ -56,14 +58,6 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
           ),
         ],
       ),
-      /**body: ListView.builder(
-        itemCount: widget.items.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(widget.items[index]),
-          );
-        },**/
-
       body: Center(child: _widgetOptions.elementAt(_currentIndex)),
       bottomNavigationBar: BottomNavyBar(
         selectedIndex: _currentIndex,
