@@ -76,7 +76,7 @@ class _AddEventState extends State<AddEvent> {
           date: currentDate,
           time: selectedTime.toString(),
           duration: int.parse(duration),
-          location: location,
+          location: location, userId: '',
         ));
 
         setState(() {

@@ -33,7 +33,12 @@ class _EditEventState extends State<EditEvent> {
 
   late TextEditingController _durationController;
   late TextEditingController _lcoationController;
-
+  late TextEditingController _titleController;
+  
+  get userId => null;
+  
+  get id => null;
+// G4J8QFM8028
   @override
   void initState() {
     currentDate = widget.sessionModel.date;
@@ -43,6 +48,8 @@ class _EditEventState extends State<EditEvent> {
     _lcoationController = TextEditingController(
       text: widget.sessionModel.location,
     );
+    _titleController = TextEditingController();
+
     super.initState();
   }
 
@@ -63,6 +70,7 @@ class _EditEventState extends State<EditEvent> {
   void dispose() {
     _durationController.dispose();
     _lcoationController.dispose();
+    _titleController.dispose();    
     super.dispose();
   }
 
@@ -70,7 +78,7 @@ class _EditEventState extends State<EditEvent> {
   void _saveEvent() async {
     try {
       if (isAdmin(context)) {
-        _editEvent();
+        // _editEvent();
       } else if (isStudent(context)) {}
     } on Exception catch (e) {
       setState(() {
@@ -81,36 +89,43 @@ class _EditEventState extends State<EditEvent> {
     }
   }
 
-  Future<void> _editEvent() async {
-    final String duration = _durationController.text;
-    final String location = _lcoationController.text;
+Future<void> _editEvent(SessionModel updatedSession) async {
+  setState(() {
+    _isLoaderVisible = true;
+  });
 
+  try {
+    await _sessionService.updateSession(updatedSession);
     setState(() {
-      _isLoaderVisible = true;
+      _isLoaderVisible = false;
     });
-
-    // check if the form is valid
-    if (duration.isNotEmpty && location.isNotEmpty) {
-      final res = SessionModel(
-        id: widget.sessionModel.id,
-        title: '',
-        date: currentDate,
-        time: selectedTime.toString(),
-        duration: int.parse(duration),
-        location: location,
-      );
-
-      await _sessionService.updateSession(
-        res,
-      );
-
-      setState(() {
-        _isLoaderVisible = false;
-      });
-
-      Navigator.pop(context, true);
-    }
+    Navigator.pop(context, true);
+  } catch (e) {
+    setState(() {
+      _isLoaderVisible = false;
+    });
+    print('EditEvent Error: $e');
   }
+}
+
+
+void _registerForEvent() {
+  final String title = _titleController.text;
+
+  var user;
+  final updatedSession = SessionModel(
+    id: widget.sessionModel.id,
+    title: title,
+    date: currentDate,
+    time: selectedTime.toString(),
+    duration: int.parse(_durationController.text),
+    location: _lcoationController.text,
+    userId: user.userId, // Supposons que user est l'utilisateur actuel
+  );
+
+  _editEvent(updatedSession);
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -141,19 +156,38 @@ class _EditEventState extends State<EditEvent> {
               controller: _lcoationController,
               decoration: InputDecoration(labelText: 'Lieu'),
             ),
+            if (isStudent(context)) // Afficher le formulaire pour les étudiants seulement
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: _titleController,
+                    decoration: InputDecoration(labelText: 'Titre de Soutenance'),
+                  ),
+                ],
+              ),            
             SizedBox(height: 16),
-            ElevatedButton(
-                onPressed: () {
-                  _saveEvent();
-                },
-                child: Text(isAdmin(context)
-                    ? 'Modifier'
-                    : isStudent(context)
-                        ? 'S\'inscrire '
-                        : 'Noter')),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     if (isAdmin(context)) {
+            //       _editEvent(SessionModel(
+            //         id: id,
+            //         date: date,
+            //         time: time, 
+            //         duration: duration, 
+            //         location: location, 
+            //         userId: userId));
+            //     } else if (isStudent(context)) {
+            //       _registerForEvent();
+            //     }
+            //   },
+            //   child: Text(isAdmin(context) ? 'Modifier' : 'S\'inscrire'),
+            // ),
           ],
         ),
       ),
     );
   }
 }
+
+

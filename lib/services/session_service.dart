@@ -26,6 +26,7 @@ class SessionService {
           time: doc['time'] ?? '',
           duration: doc['duration'] ?? '',
           location: doc['location'] ?? '',
+          userId: '',
         );
       }).toList();
     });

@@ -7,6 +7,8 @@ class SessionModel {
   String time;
   int duration;
   String location;
+  String? userId = null;
+
   SessionModel({
     required this.id,
     this.title,
@@ -14,6 +16,7 @@ class SessionModel {
     required this.time,
     required this.duration,
     required this.location,
+    required this.userId,
   });
   factory SessionModel.fromFirestore(
       DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -25,7 +28,8 @@ class SessionModel {
       date: data['date'].toDate(),
       time: data['time'] ?? '',
       duration: data['duration'] ?? 0,
-      location: data['location'] ?? '',
+      location: data['location'] ?? '', 
+      userId: data['userId'] ?? null,
     );
   }
   Map<String, Object?> ToFirestore() {
