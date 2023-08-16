@@ -7,6 +7,9 @@ import '../../services/auth_service.dart';
 import '../../utils/navigation.dart';
 
 class LoginScreen extends StatefulWidget {
+  final Function visible;
+  LoginScreen(this.visible);
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -16,15 +19,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final AuthService _authService = AuthService();
   CustomTextField emailText =
-      CustomTextField(title: 'Email', placeholder: 'Enter your email');
-  CustomTextField passText =
-      CustomTextField(title: 'Password', placeholder: '*****', ispass: true);
+      CustomTextField(title: 'Email', placeholder: 'Votre adresse email');
+  CustomTextField passText = CustomTextField(
+      title: 'Mot de passe', placeholder: '*****', ispass: true);
 
   final _key = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    emailText.error = "Enter email";
-    passText.error = "Enter password";
+    emailText.error = "Veuillez entrer votre adresse email";
+    passText.error = "Veuillez entrer votre mot de passe";
 
     return Scaffold(
       body: Container(
@@ -43,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           const Text(
-                            'LoginScreen',
+                            'Page d\' Authentification',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontSize: 30,
@@ -87,6 +90,31 @@ class _LoginScreenState extends State<LoginScreen> {
                                 setState(() {
                                   _isLoaderVisible = false;
                                 });
+
+                                String errorMessage =
+                                    'Une erreur s\'est produite lors de la connexion. Veuillez réessayer.';
+
+                                if (e is FirebaseAuthException) {
+                                  if (e.code == 'user-not-found') {
+                                    errorMessage =
+                                        'Aucun utilisateur trouvé avec cet email.';
+                                  } else if (e.code == 'wrong-password') {
+                                    errorMessage =
+                                        'Mot de passe incorrect pour cet utilisateur.';
+                                  } else if (e.code == 'invalid-email') {
+                                    errorMessage =
+                                        'Format d\'adresse email invalide.';
+                                  }
+                                }
+
+                                errorMessage ??=
+                                    'Une erreur s\'est produite lors de la connexion. Veuillez réessayer.';
+
+                                setState(() {
+                                  emailText.error = errorMessage;
+                                  passText.error = errorMessage;
+                                });
+
                                 print('LoginScreen Error: $e');
                               }
                             },
@@ -97,10 +125,26 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             child: const Text(
-                              'LoginScreen',
+                              'Se connecter',
                               style:
                                   TextStyle(color: Colors.white, fontSize: 20),
                             ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('Avez-vous un compte?'),
+                              TextButton(
+                                onPressed: widget.visible as void Function()?,
+                                child: const Text(
+                                  'S\' inscrire',
+                                  style: TextStyle(color: Colors.redAccent),
+                                ),
+                              )
+                            ],
                           ),
                         ],
                       ),

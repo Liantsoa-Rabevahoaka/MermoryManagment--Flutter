@@ -76,7 +76,13 @@ class _AddEventState extends State<AddEvent> {
           date: currentDate,
           time: selectedTime.toString(),
           duration: int.parse(duration),
-          location: location, userId: '',
+          location: location,
+          userId: '',
+          notes: 0,
+          comments1: '',
+          comments2: '',
+          comments3: '',
+          code: '',
         ));
 
         setState(() {
@@ -97,7 +103,7 @@ class _AddEventState extends State<AddEvent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Add Event')),
+      appBar: AppBar(title: Text('Ajouter un évènement')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -124,7 +130,7 @@ class _AddEventState extends State<AddEvent> {
               onPressed: () {
                 _saveEvent();
               },
-              child: Text('Add Event'),
+              child: Text('Ajouter'),
             ),
           ],
         ),

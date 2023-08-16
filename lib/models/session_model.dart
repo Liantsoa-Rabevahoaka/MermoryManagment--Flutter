@@ -7,8 +7,12 @@ class SessionModel {
   String time;
   int duration;
   String location;
-  String? userId = null;
-
+  String userId;
+  double notes;
+  String code;
+  String comments1;
+  String comments2;
+  String comments3;
   SessionModel({
     required this.id,
     this.title,
@@ -17,6 +21,11 @@ class SessionModel {
     required this.duration,
     required this.location,
     required this.userId,
+    required this.notes,
+    required this.comments2,
+    required this.comments1,
+    required this.comments3,
+    required this.code,
   });
   factory SessionModel.fromFirestore(
       DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -28,8 +37,13 @@ class SessionModel {
       date: data['date'].toDate(),
       time: data['time'] ?? '',
       duration: data['duration'] ?? 0,
-      location: data['location'] ?? '', 
-      userId: data['userId'] ?? null,
+      location: data['location'] ?? '',
+      userId: data['userId'] ?? '',
+      notes: data['notes'] ?? 0,
+      comments1: data['comments1'] ?? '',
+      comments2: data['comments2'] ?? '',
+      comments3: data['comments3'] ?? '',
+      code: data['code'] ?? '',
     );
   }
   Map<String, Object?> ToFirestore() {
@@ -39,6 +53,12 @@ class SessionModel {
       'time': time,
       'duration': duration,
       'location': location,
+      'userId': userId,
+      'notes': notes,
+      'comments1': comments1,
+      'comments2': comments2,
+      'comments3': comments3,
+      'code': code,
     };
   }
 
@@ -50,6 +70,12 @@ class SessionModel {
       'time': time,
       'duration': duration,
       'location': location,
+      'userId': userId,
+      'notes': notes,
+      'comments1': comments1,
+      'comments2': comments2,
+      'comments3': comments3,
+      'code': code,
     };
   }
 }

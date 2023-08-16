@@ -1,18 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_de_soutenance/models/customTextField.dart';
+import 'package:gestion_de_soutenance/models/sessionSoutenance.dart';
+import 'package:gestion_de_soutenance/screens/admin/student_detail_screen.dart';
 import '../../models/user_model.dart';
 import '../../services/student_service.dart';
-import 'student_detail_screen.dart';
 
 class StudentList extends StatefulWidget {
+  final SessionSoutenanceModel session;
+
+  StudentList({required this.session});
+
   @override
   _CrudStudentListState createState() => _CrudStudentListState();
 }
 
 class _CrudStudentListState extends State<StudentList> {
+
+  String generateUniqueId() {
+    DateTime now = DateTime.now();
+    String id = '${now.microsecondsSinceEpoch}';
+    return id;
+  }
   final StudentService studentService = StudentService();
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController parcoursController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
+  CustomTextField passText = CustomTextField(
+      title: 'Mot de passe', placeholder: '*****', ispass: true);
+  CustomTextField confirmPassText = CustomTextField(
+      title: 'Confirmer mot de passe', placeholder: '*****', ispass: true);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +38,7 @@ class _CrudStudentListState extends State<StudentList> {
         title: Text('Listes des etudiants'),
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ElevatedButton(
             onPressed: () {
@@ -42,34 +59,69 @@ class _CrudStudentListState extends State<StudentList> {
                           controller: emailController,
                           decoration: InputDecoration(labelText: 'Email'),
                         ),
+                        TextField(
+                          controller: parcoursController,
+                          decoration: InputDecoration(labelText: 'Parcours'),
+                        ),
                         SizedBox(height: 16),
                         TextField(
                           controller: ageController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(labelText: 'Age'),
                         ),
+                        SizedBox(height: 16),
+                        passText.textFormField(),
                       ],
                     ),
                     actions: [
                       ElevatedButton(
-                        onPressed: () {
-                          String name = nameController.text.trim();
-                          String email = emailController.text.trim();
+                        onPressed: () async {
+                          String nom = nameController.text.trim();
+                          String parcours = parcoursController.text.trim();
                           int age = int.tryParse(ageController.text) ?? 0;
+                          String email = emailController.text.trim();
+                          String password = passText.value;
 
+                          // Utilisez userData.docs.isNotEmpty au lieu de sessionSnapshot.exists
                           UserModel student = UserModel(
-                            id: '...', // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
-                            name: name,
+                            id: generateUniqueId(),// Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
+                            name: nom,
                             email: email,
                             age: age,
-                            password: '',
+                            password: password,
                             role: 'student',
+                            parcours: parcours,
+                            code: '${widget.session.code}',
                           );
 
                           studentService.addStudent(student);
 
                           Navigator.of(context).pop();
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Étudiant enregistré'),
+                                content: Text(
+                                    'L\'étudiant a été enregistré avec succès.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.redAccent.withOpacity(.7),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
                         child: Text('Enregistrer'),
                       ),
                       ElevatedButton(
@@ -83,12 +135,12 @@ class _CrudStudentListState extends State<StudentList> {
                 },
               );
             },
-            child: Text('Add Student'),
+            child: Text('Ajouter un étudiant'),
           ),
           Expanded(
             child: StreamBuilder<List<UserModel>>(
               //Affichage etudiants
-              stream: studentService.getStudents(),
+              stream: studentService.getStudents('${widget.session.code}'),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   List<UserModel> students = snapshot.data!;
@@ -209,6 +261,8 @@ void _showEditDialog(BuildContext context, UserModel student) {
                 age: newAge,
                 password: '',
                 role: '',
+                parcours: '',
+                code: '',
               );
               StudentService studentService = StudentService();
 

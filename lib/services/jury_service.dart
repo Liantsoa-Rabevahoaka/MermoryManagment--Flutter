@@ -10,17 +10,19 @@ class StudentService {
 
   Future<void> addStudent(UserModel student) async {
     try {
-      final String password = RandomUtils.generatePassword();
+      //final String password = RandomUtils.generatePassword();
 
       UserCredential result = await _auth.createUserWithEmailAndPassword(
-          email: student.email, password: password);
+          email: student.email, password: student.password);
 
       await _jurysCollection.doc(student.id).set({
         'name': student.name,
         'email': student.email,
         'age': student.age,
-        'role': 'jury',
-        'password': password,
+        'role': student.role,
+        'password': student.password,
+        'parcours': student.parcours,
+        'code': student.code,
       });
     } catch (e) {
       print(' Error adding student: $e');
@@ -28,8 +30,8 @@ class StudentService {
   }
 
 // TODO: Ajout des champs si necessaire
-  Stream<List<UserModel>> getStudents() {
-    return _jurysCollection.where("role", isEqualTo: "jury").snapshots().map((snapshot) {
+  Stream<List<UserModel>> getStudents(code) {
+    return _jurysCollection.where("role", whereIn: ["president", "rapporteur", "examinateur"]).where("code", isEqualTo: code).snapshots().map((snapshot) {
       return snapshot.docs
           .map((doc) => UserModel(
                 id: doc.id,
@@ -37,7 +39,9 @@ class StudentService {
                 email: doc['email'],
                 age: doc['age'],
                 password: '',
-                role: '',
+                role: doc['role'],
+                parcours: '',
+                code: '',
               ))
           .toList();
     });

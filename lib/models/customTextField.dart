@@ -11,7 +11,7 @@ class CustomTextField {
     required this.title,
     required this.placeholder,
     this.ispass = false,
-    this.error = "Please complete",
+    this.error = '',
   }) {
     controller = TextEditingController();
   }

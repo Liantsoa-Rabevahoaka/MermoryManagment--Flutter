@@ -39,7 +39,7 @@ class EventItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Disponible',
+                  event.title?.isEmpty ?? true ? 'Disponible' : event.title!,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -56,21 +56,6 @@ class EventItem extends StatelessWidget {
                   icon: Icons.date_range,
                   text: DateUtil.dateOnly(date: event.date),
                 ),
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //   children: [
-                //     IconButton(
-                //       onPressed: onDelete,
-                //       icon: Icon(Icons.delete),
-                //       color: Colors.red,
-                //     ),
-                //     IconButton(
-                //       onPressed: onEdit,
-                //       icon: Icon(Icons.edit),
-                //       color: Colors.blue,
-                //     ),
-                //   ],
-                // ),
               ],
             ),
             Row(

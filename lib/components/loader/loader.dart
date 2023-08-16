@@ -7,7 +7,7 @@ class Loader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SpinKitFoldingCube(
-      color: Colors.white,
+      color: Colors.redAccent,
       size: 50.0,
       duration: Duration(milliseconds: 1200),
     );

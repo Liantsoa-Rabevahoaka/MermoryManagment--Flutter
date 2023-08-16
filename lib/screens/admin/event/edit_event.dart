@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gestion_de_soutenance/components/pickers/date_picker.dart';
 import 'package:gestion_de_soutenance/components/pickers/time_picker.dart';
@@ -34,11 +36,12 @@ class _EditEventState extends State<EditEvent> {
   late TextEditingController _durationController;
   late TextEditingController _lcoationController;
   late TextEditingController _titleController;
-  
-  get userId => null;
-  
-  get id => null;
-// G4J8QFM8028
+  late TextEditingController _notesController;
+  late TextEditingController _comments1Controller;
+  late TextEditingController _comments3Controller;
+  late TextEditingController _comments2Controller;
+  late TextEditingController _codeController;
+
   @override
   void initState() {
     currentDate = widget.sessionModel.date;
@@ -48,8 +51,24 @@ class _EditEventState extends State<EditEvent> {
     _lcoationController = TextEditingController(
       text: widget.sessionModel.location,
     );
-    _titleController = TextEditingController();
-
+    _titleController = TextEditingController(
+      text: widget.sessionModel.title,
+    );
+    _notesController = TextEditingController(
+      text: widget.sessionModel.notes.toString(),
+    );
+    _comments1Controller = TextEditingController(
+      text: widget.sessionModel.comments1,
+    );
+    _comments2Controller = TextEditingController(
+      text: widget.sessionModel.comments2,
+    );
+    _comments3Controller = TextEditingController(
+      text: widget.sessionModel.comments3,
+    );
+    _codeController = TextEditingController(
+      text: widget.sessionModel.code,
+    );
     super.initState();
   }
 
@@ -70,7 +89,11 @@ class _EditEventState extends State<EditEvent> {
   void dispose() {
     _durationController.dispose();
     _lcoationController.dispose();
-    _titleController.dispose();    
+    _titleController.dispose();
+    _notesController.dispose();
+    _comments1Controller.dispose();
+    _comments2Controller.dispose();
+    _comments3Controller.dispose();
     super.dispose();
   }
 
@@ -78,8 +101,12 @@ class _EditEventState extends State<EditEvent> {
   void _saveEvent() async {
     try {
       if (isAdmin(context)) {
-        // _editEvent();
-      } else if (isStudent(context)) {}
+        _editEvent();
+      } else if (isStudent(context)) {
+        _registerEvent();
+      } else if (isTeacher(context)){
+        _noteEvent();
+      }
     } on Exception catch (e) {
       setState(() {
         _isLoaderVisible = false;
@@ -89,48 +116,140 @@ class _EditEventState extends State<EditEvent> {
     }
   }
 
-Future<void> _editEvent(SessionModel updatedSession) async {
-  setState(() {
-    _isLoaderVisible = true;
-  });
+  Future<void> _editEvent() async {
+    final String duration = _durationController.text;
+    final String location = _lcoationController.text;
 
-  try {
-    await _sessionService.updateSession(updatedSession);
     setState(() {
-      _isLoaderVisible = false;
+      _isLoaderVisible = true;
     });
-    Navigator.pop(context, true);
-  } catch (e) {
-    setState(() {
-      _isLoaderVisible = false;
-    });
-    print('EditEvent Error: $e');
+
+    // check if the form is valid
+    if (duration.isNotEmpty && location.isNotEmpty) {
+      final res = SessionModel(
+        id: widget.sessionModel.id,
+        title: '',
+        date: currentDate,
+        time: selectedTime.toString(),
+        duration: int.parse(duration),
+        location: location,
+        userId: '',
+        notes: 0,
+        comments1: '',
+        comments2: '',
+        comments3: '',
+        code: '',
+      );
+
+      await _sessionService.updateSession(
+        res,
+      );
+
+      setState(() {
+        _isLoaderVisible = false;
+      });
+
+      Navigator.pop(context, true);
+    }
   }
-}
 
+  Future<void> _registerEvent() async {
+    final String duration = _durationController.text;
+    final String location = _lcoationController.text;
+    final String title = _titleController.text;
 
-void _registerForEvent() {
-  final String title = _titleController.text;
+    setState(() {
+      _isLoaderVisible = true;
+    });
 
-  var user;
-  final updatedSession = SessionModel(
-    id: widget.sessionModel.id,
-    title: title,
-    date: currentDate,
-    time: selectedTime.toString(),
-    duration: int.parse(_durationController.text),
-    location: _lcoationController.text,
-    userId: user.userId, // Supposons que user est l'utilisateur actuel
-  );
+    final user = FirebaseAuth.instance.currentUser;
+    // check if the form is valid
+    if (user != null && duration.isNotEmpty && location.isNotEmpty) {
+      final res = SessionModel(
+        id: widget.sessionModel.id,
+        title: title,
+        date: currentDate,
+        time: selectedTime.toString(),
+        duration: int.parse(duration),
+        location: location,
+        userId: user.uid, // Utiliser l'ID de l'utilisateur actuel s'il existe
+        notes: 0,
+        comments1: '',
+        comments2: '',
+        comments3: '',
+        code: '',
+      );
 
-  _editEvent(updatedSession);
-}
+      await _sessionService.updateSession(
+        res,
+      );
 
+      setState(() {
+        _isLoaderVisible = false;
+      });
 
+      Navigator.pop(context, true);
+    } else {
+      setState(() {
+        _isLoaderVisible = false;
+      });
+      print("Utilisateur non connecté ou données manquantes");
+    }
+  }
+
+  Future<void> _noteEvent() async {
+    final String duration = _durationController.text;
+    final String location = _lcoationController.text;
+    final String title = _titleController.text;
+    final String notes = _notesController.text;
+    final String comments1 = _comments1Controller.text;
+    final String comments2 = _comments2Controller.text;
+    final String comments3 = _comments3Controller.text;
+
+    setState(() {
+      _isLoaderVisible = true;
+    });
+
+    // check if the form is valid
+    if (duration.isNotEmpty && location.isNotEmpty) {
+      final res = SessionModel(
+        id: widget.sessionModel.id,
+        title: title,
+        date: currentDate,
+        time: selectedTime.toString(),
+        duration: int.parse(duration),
+        location: location,
+        userId: '',
+        notes: double.parse(notes),
+        comments1: comments1,
+        comments2: comments2,
+        comments3: comments3,
+        code: '',
+      );
+
+      await _sessionService.updateSession(
+        res,
+      );
+
+      setState(() {
+        _isLoaderVisible = false;
+      });
+
+      Navigator.pop(context, true);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Add Event')),
+      appBar: AppBar(
+        title: Text(
+          (isAdmin(context)
+              ? 'Modifier un evenement'
+              : isStudent(context)
+                  ? 'Inscription'
+                  : 'Noter'),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -156,38 +275,45 @@ void _registerForEvent() {
               controller: _lcoationController,
               decoration: InputDecoration(labelText: 'Lieu'),
             ),
-            if (isStudent(context)) // Afficher le formulaire pour les étudiants seulement
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextField(
-                    controller: _titleController,
-                    decoration: InputDecoration(labelText: 'Titre de Soutenance'),
-                  ),
-                ],
-              ),            
+            TextField(
+              enabled: isStudent(context),
+              controller: _titleController,
+              decoration: InputDecoration(labelText: 'Entrez ici votre Theme'),
+            ),
+            TextField(
+              enabled: isTeacher(context),
+              controller: _notesController,
+              decoration: InputDecoration(labelText: 'Notes'),
+            ),
+            TextField(
+              enabled: isTeacher(context),
+              controller: _comments1Controller,
+              decoration: InputDecoration(labelText: 'Commentaires du président'),
+            ),
+            TextField(
+              enabled: isTeacher(context),
+              controller: _comments2Controller,
+              decoration: InputDecoration(labelText: 'Commentaires du Examinateur'),
+            ),
+            TextField(
+              enabled: isTeacher(context),
+              controller: _comments3Controller,
+              decoration: InputDecoration(labelText: 'Commentaires du Rapporteur'),
+            ),
             SizedBox(height: 16),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     if (isAdmin(context)) {
-            //       _editEvent(SessionModel(
-            //         id: id,
-            //         date: date,
-            //         time: time, 
-            //         duration: duration, 
-            //         location: location, 
-            //         userId: userId));
-            //     } else if (isStudent(context)) {
-            //       _registerForEvent();
-            //     }
-            //   },
-            //   child: Text(isAdmin(context) ? 'Modifier' : 'S\'inscrire'),
-            // ),
+            ElevatedButton(
+              onPressed: () {
+                _saveEvent();
+              },
+              child: Text(isAdmin(context)
+                  ? 'Modifier'
+                  : isStudent(context)
+                      ? 'S\'inscrire '
+                      : 'Noter'),
+            ),
           ],
         ),
       ),
     );
   }
 }
-
-

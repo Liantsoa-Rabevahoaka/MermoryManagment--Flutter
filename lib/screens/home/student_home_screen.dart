@@ -31,7 +31,6 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
   static List<Widget> _widgetOptions = <Widget>[
     IndexStudent(),
     EventScreen(),
-    // planningStudent(),
     NoteStudent(),
   ];
 
@@ -45,7 +44,13 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
         actions: [
           // Bouton de déconnexion dans l'app bar
           IconButton(
-            icon: Icon(Icons.exit_to_app),
+            icon: Row(
+              children: [
+                Icon(Icons.exit_to_app),
+                SizedBox(width: 4),
+                Text('Déconnexion'),
+              ],
+            ),
             onPressed: () => {
               _authService.signOut(),
               // use material page route to redirect to the sign in screen

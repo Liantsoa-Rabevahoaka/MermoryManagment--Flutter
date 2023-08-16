@@ -1,18 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_de_soutenance/models/customTextField.dart';
+import 'package:gestion_de_soutenance/models/sessionSoutenance.dart';
 import 'student_detail_screen.dart';
 import '../../models/user_model.dart';
 import '../../services/jury_service.dart';
 
 class Juryscreen extends StatefulWidget {
+  final SessionSoutenanceModel session;
+
+  Juryscreen({required this.session});
   @override
   _JuryscreenState createState() => _JuryscreenState();
 }
 
 class _JuryscreenState extends State<Juryscreen> {
+  String generateUniqueId() {
+    DateTime now = DateTime.now();
+    String id = '${now.microsecondsSinceEpoch}';
+    return id;
+  }
+
   final StudentService studentService = StudentService();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController ageController = TextEditingController();
+  final TextEditingController parcoursController = TextEditingController();
+  final TextEditingController roleController = TextEditingController();
+  CustomTextField passText = CustomTextField(
+      title: 'Mot de passe', placeholder: '*****', ispass: true);
+  String selectedRole = ''; // Stocke le rôle sélectionné par l'utilisateur
+
+  List<String> roleOptions = ['Président', 'Rapporteur', 'Examinateur'];
+// Fonction appelée lorsque l'utilisateur sélectionne une option de rôle
+  void onRoleSelected(String? role) {
+    setState(() {
+      selectedRole = role ?? ''; // Si role est null, utilisez une chaîne vide
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +67,14 @@ class _JuryscreenState extends State<Juryscreen> {
                         ),
                         SizedBox(height: 16),
                         TextField(
-                          controller: ageController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(labelText: 'Age'),
+                          controller: parcoursController,
+                          decoration: InputDecoration(labelText: 'Parcours'),
+                        ),
+                        SizedBox(height: 16),
+                        passText.textFormField(),
+                        TextField(
+                          controller: roleController,
+                          decoration: InputDecoration(labelText: 'Role'),
                         ),
                       ],
                     ),
@@ -55,20 +83,43 @@ class _JuryscreenState extends State<Juryscreen> {
                         onPressed: () {
                           String name = nameController.text.trim();
                           String email = emailController.text.trim();
-                          int age = int.tryParse(ageController.text) ?? 0;
+                          int age = 0;
+                          String parcours = parcoursController.text.trim();
+                          String password = passText.value;
+                          String role = roleController.text.trim();
 
                           UserModel student = UserModel(
-                            id: '...', // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
+                            id: generateUniqueId(), // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
                             name: name,
                             email: email,
                             age: age,
-                            password: '',
-                            role: 'jury',
+                            password: password,
+                            role: role,
+                            parcours: parcours,
+                            code: '${widget.session.code}',
                           );
 
                           studentService.addStudent(student);
 
                           Navigator.of(context).pop();
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Jury enregistré'),
+                                content: Text(
+                                    'Le jury a été enregistré avec succès.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
                         child: Text('Enregistrer'),
                       ),
@@ -88,7 +139,7 @@ class _JuryscreenState extends State<Juryscreen> {
           Expanded(
             child: StreamBuilder<List<UserModel>>(
               //Affichage etudiants
-              stream: studentService.getStudents(),
+              stream: studentService.getStudents('${widget.session.code}'),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   List<UserModel> students = snapshot.data!;
@@ -98,8 +149,12 @@ class _JuryscreenState extends State<Juryscreen> {
                       return ListTile(
                         //seulement nom et mail
                         title: Text(students[index].name),
-                        subtitle: Text(students[index].email),
-
+                        subtitle: Column(
+                          children: [
+                            Text(students[index].email),
+                            Text(students[index].role),
+                          ],
+                        ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -208,6 +263,8 @@ void _showEditDialog(BuildContext context, UserModel student) {
                 age: newAge,
                 password: '',
                 role: '',
+                parcours: '',
+                code: '',
               );
               StudentService studentService = StudentService();
 

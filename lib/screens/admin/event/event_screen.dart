@@ -110,23 +110,24 @@ class _EventScreenState extends State<EventScreen> {
       final delete = await showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text("Delete Event?"),
-          content: const Text("Are you sure you want to delete?"),
+          title: const Text("Supprimer?"),
+          content: const Text("Êtes-vous sûr de la suppression?"),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.black,
-              ),
-              child: const Text("No"),
-            ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
               style: TextButton.styleFrom(
                 foregroundColor: Colors.red,
               ),
-              child: const Text("Yes"),
+              child: const Text("Oui"),
             ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.black,
+              ),
+              child: const Text("Annuler"),
+            ),
+
           ],
         ),
       );

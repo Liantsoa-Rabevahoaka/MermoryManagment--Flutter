@@ -54,7 +54,7 @@ class _DatePickerState extends State<DatePicker> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Selected Date:'),
+              Text('Date choisi:'),
               Text("${currentDate.toLocal()}".split(' ')[0]),
             ],
           ),

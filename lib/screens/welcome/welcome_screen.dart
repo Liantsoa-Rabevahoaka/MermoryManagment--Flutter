@@ -19,12 +19,12 @@ class WelcomeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Welcome to MyApp!' + (user != null ? ' ${user.name}' : ''),
+              'Bienvenue sur My defense!' + (user != null ? ' ${user.name}' : ''),
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
             Text(
-              'Discover amazing features and tutorials to enhance your learning experience.',
+              'Voulez-vous voir les guides de l\' utilisation de cet Apps?',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16),
             ),
@@ -39,7 +39,7 @@ class WelcomeScreen extends StatelessWidget {
               children: [
                 CustomButton(
                   icon: Icons.play_arrow,
-                  text: 'Tutorial',
+                  text: 'Tutoriel',
                   onPressed: () {
                     // Redirect to tutorial screen
                     // Add your navigation code here
@@ -48,7 +48,7 @@ class WelcomeScreen extends StatelessWidget {
                 SizedBox(width: 20),
                 CustomButton(
                   icon: Icons.arrow_forward,
-                  text: 'Skip',
+                  text: 'Ignorer',
                   onPressed: () {
                     redirectUserToHome(
                         user ??
@@ -58,7 +58,10 @@ class WelcomeScreen extends StatelessWidget {
                                 email: 'email',
                                 role: 'role',
                                 password: 'password',
-                                age: 2),
+                                age: 2,
+                                parcours: 'parcours',
+                                code:'code',),
+
                         context);
                   },
                 ),

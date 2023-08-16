@@ -10,7 +10,7 @@ class StudentDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Détails de l\'étudiant'),
+        title: Text('Information'),
       ),
       body: Container(
         padding: EdgeInsets.only(
@@ -37,6 +37,15 @@ class StudentDetailScreen extends StatelessWidget {
                     SizedBox(height: 5),
                     Text(
                       student.name,
+                      style: TextStyle(
+                        fontSize: 22,
+                        color: const Color.fromRGBO(255, 255, 255, 1),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 5,),
+                    Text(
+                      student.role,
                       style: TextStyle(
                         fontSize: 22,
                         color: const Color.fromRGBO(255, 255, 255, 1),

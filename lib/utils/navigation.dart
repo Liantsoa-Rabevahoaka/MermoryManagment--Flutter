@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gestion_de_soutenance/models/user_model.dart';
 import 'package:gestion_de_soutenance/screens/admin/admin_root_screen.dart';
+import 'package:gestion_de_soutenance/screens/home/admin_home_screen.dart';
+import 'package:gestion_de_soutenance/screens/home/teacher_home_screen.dart';
 import 'package:gestion_de_soutenance/screens/welcome/welcome_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,12 +57,25 @@ void redirectUserToHome(UserModel user, BuildContext context) {
     // Redirigez l'utilisateur vers une autre page car il est déjà connecté
     print('User is admin');
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => AdminRootScreen()),
+      MaterialPageRoute(builder: (context) => /**AdminRootScreen()**/ AdminHomeScreen()),
     );
-  } else if (user.role == 'teacher') {
-    // Redirigez l'utilisateur vers une autre page car il est déjà connecté
-    print('User is teacher');
+  } else if (user.role == 'jury') {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => TeacherHomeScreen()),
+    );
+  } else if (user.role == 'president') {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => TeacherHomeScreen()),
+    );
+  } else if (user.role == 'rapporteur') {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => TeacherHomeScreen()),
+    );
+  } else if (user.role == 'examinateur') {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => TeacherHomeScreen()),
+    );
   } else {
-    print('Verifier Adresse emmail et votre mot de passe');
+    print('Verifier Adresse email et votre mot de passe');
   }
 }

@@ -23,5 +23,5 @@ bool isTeacher(BuildContext context) {
   UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
   UserModel? user = userProvider.user ?? null;
 
-  return user != null && user.role == 'jury';
+  return user != null && ["president", "rapporteur", "examinateur"].contains(user.role);
 }

@@ -59,7 +59,7 @@ class _TimePickerState extends State<TimePicker> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Selected Time:'),
+              Text('Heure choisi:'),
               Text(
                 "${currentTime.hour}:${currentTime.minute.toString().padLeft(2, '0')}",
               ),
