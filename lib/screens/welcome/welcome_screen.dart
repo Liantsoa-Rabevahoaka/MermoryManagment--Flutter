@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/providers/user_provider.dart';
-import 'package:gestion_de_soutenance/utils/navigation.dart';
+import '../../providers/user_provider.dart';
+import '../../utils/navigation.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/buttons/custom_button.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/models/user_model.dart';
+import '../models/user_model.dart';
 
 class UserProvider extends ChangeNotifier {
   UserModel? _user;

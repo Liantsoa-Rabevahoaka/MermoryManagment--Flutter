@@ -1,10 +1,11 @@
+import '../screens/teacher/indexTeacher.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/models/user_model.dart';
-import 'package:gestion_de_soutenance/screens/admin/admin_root_screen.dart';
-import 'package:gestion_de_soutenance/screens/home/admin_home_screen.dart';
-import 'package:gestion_de_soutenance/screens/home/teacher_home_screen.dart';
-import 'package:gestion_de_soutenance/screens/welcome/welcome_screen.dart';
+import '../models/user_model.dart';
+import '../screens/admin/admin_root_screen.dart';
+import '../screens/home/admin_home_screen.dart';
+import '../screens/home/teacher_home_screen.dart';
+import '../screens/welcome/welcome_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/user_provider.dart';
@@ -59,23 +60,26 @@ void redirectUserToHome(UserModel user, BuildContext context) {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (context) => /**AdminRootScreen()**/ AdminHomeScreen()),
     );
-  } else if (user.role == 'jury') {
+  // } else if (user.role == 'jury') {
+  //   Navigator.of(context).pushReplacement(
+  //     MaterialPageRoute(builder: (context) => StudentHomeScreen()),
+  //   );
+  } else  {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => TeacherHomeScreen()),
+      MaterialPageRoute(builder: (context) => TeacherHomeScreen(
+          title: 'JURY',
+          items: ['List'],
+        ),),
     );
-  } else if (user.role == 'president') {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => TeacherHomeScreen()),
-    );
-  } else if (user.role == 'rapporteur') {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => TeacherHomeScreen()),
-    );
-  } else if (user.role == 'examinateur') {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => TeacherHomeScreen()),
-    );
-  } else {
-    print('Verifier Adresse email et votre mot de passe');
+   }// else if (user.role == 'rapporteur') {
+  //   Navigator.of(context).pushReplacement(
+  //     MaterialPageRoute(builder: (context) => StudentHomeScreen()),
+  //   );
+  // } else if (user.role == 'examinateur') {
+  //   Navigator.of(context).pushReplacement(
+  //     MaterialPageRoute(builder: (context) => StudentHomeScreen()),
+  //   );
+  // } else {
+  //   print('Verifier Adresse email et votre mot de passe');
   }
-}
+

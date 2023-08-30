@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/components/pickers/date_picker.dart';
-import 'package:gestion_de_soutenance/components/pickers/time_picker.dart';
-import 'package:gestion_de_soutenance/services/session_service.dart';
-import 'package:gestion_de_soutenance/utils/random.dart';
+import '../../../components/pickers/date_picker.dart';
+import '../../../components/pickers/time_picker.dart';
+import '../../../models/sessionSoutenance.dart';
+import '../../../services/session_service.dart';
+import '../../../utils/random.dart';
 import '../../../models/session_model.dart';
 
 class AddEvent extends StatefulWidget {
@@ -10,12 +11,14 @@ class AddEvent extends StatefulWidget {
   final DateTime lastDate;
   final DateTime selectedDate;
   final Function(DateTime) updateSelectedDate;
+  final SessionSoutenanceModel session;
 
   const AddEvent({
     required this.firstDate,
     required this.lastDate,
     required this.selectedDate,
     required this.updateSelectedDate,
+    required this.session,
   });
 
   @override
@@ -77,19 +80,38 @@ class _AddEventState extends State<AddEvent> {
           time: selectedTime.toString(),
           duration: int.parse(duration),
           location: location,
-          userId: '',
+          emailStudent: '',
           notes: 0,
           comments1: '',
           comments2: '',
           comments3: '',
-          code: '',
+          code: widget.session.code,
         ));
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Succès'),
+              content: Text('La session a été ajoutée avec succès à la base de données.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context, true);
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
 
         setState(() {
           _isLoaderVisible = false;
         });
 
-        Navigator.pop(context, true);
+
       }
     } on Exception catch (e) {
       setState(() {

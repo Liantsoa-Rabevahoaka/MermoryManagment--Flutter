@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/components/pickers/date_picker.dart';
-import 'package:gestion_de_soutenance/components/pickers/time_picker.dart';
-import 'package:gestion_de_soutenance/services/session_service.dart';
-import 'package:gestion_de_soutenance/utils/auth.dart';
-import 'package:gestion_de_soutenance/utils/dates.dart';
-import 'package:gestion_de_soutenance/utils/random.dart';
+import '../../../components/pickers/date_picker.dart';
+import '../../../components/pickers/time_picker.dart';
+import '../../../services/session_service.dart';
+import '../../../utils/auth.dart';
+import '../../../utils/dates.dart';
+import '../../../utils/random.dart';
 import '../../../models/session_model.dart';
 
 class EditEvent extends StatefulWidget {
@@ -133,12 +133,12 @@ class _EditEventState extends State<EditEvent> {
         time: selectedTime.toString(),
         duration: int.parse(duration),
         location: location,
-        userId: '',
+        emailStudent: '',
         notes: 0,
         comments1: '',
         comments2: '',
         comments3: '',
-        code: '',
+        code:  widget.sessionModel.code,
       );
 
       await _sessionService.updateSession(
@@ -149,7 +149,24 @@ class _EditEventState extends State<EditEvent> {
         _isLoaderVisible = false;
       });
 
-      Navigator.pop(context, true);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Succès'),
+            content: Text('La session a été mise à jour avec succès.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context, true);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
@@ -172,12 +189,12 @@ class _EditEventState extends State<EditEvent> {
         time: selectedTime.toString(),
         duration: int.parse(duration),
         location: location,
-        userId: user.uid, // Utiliser l'ID de l'utilisateur actuel s'il existe
+        emailStudent: user.uid, // Utiliser l'ID de l'utilisateur actuel s'il existe
         notes: 0,
         comments1: '',
         comments2: '',
         comments3: '',
-        code: '',
+        code:  widget.sessionModel.code,
       );
 
       await _sessionService.updateSession(
@@ -219,7 +236,7 @@ class _EditEventState extends State<EditEvent> {
         time: selectedTime.toString(),
         duration: int.parse(duration),
         location: location,
-        userId: '',
+        emailStudent: '',
         notes: double.parse(notes),
         comments1: comments1,
         comments2: comments2,

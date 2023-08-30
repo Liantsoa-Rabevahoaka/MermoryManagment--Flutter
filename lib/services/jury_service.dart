@@ -1,36 +1,36 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../models/student_model.dart';
+import '../models/jury_model.dart';
 import '../models/user_model.dart';
 import '../utils/random.dart';
 
-class StudentService {
+class JuryService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CollectionReference _jurysCollection =  FirebaseFirestore.instance.collection('Users');
 
-  Future<void> addStudent(UserModel student) async {
+  Future<void> addJury(UserModel jury) async {
     try {
       //final String password = RandomUtils.generatePassword();
 
       UserCredential result = await _auth.createUserWithEmailAndPassword(
-          email: student.email, password: student.password);
+          email: jury.email, password: jury.password);
 
-      await _jurysCollection.doc(student.id).set({
-        'name': student.name,
-        'email': student.email,
-        'age': student.age,
-        'role': student.role,
-        'password': student.password,
-        'parcours': student.parcours,
-        'code': student.code,
+      await _jurysCollection.doc(jury.id).set({
+        'name': jury.name,
+        'email': jury.email,
+        'age': jury.age,
+        'role': jury.role,
+        'password': jury.password,
+        'parcours': jury.parcours,
+        'code': jury.code,
       });
     } catch (e) {
-      print(' Error adding student: $e');
+      print(' Error adding jury: $e');
     }
   }
 
 // TODO: Ajout des champs si necessaire
-  Stream<List<UserModel>> getStudents(code) {
+  Stream<List<UserModel>> getJurys(code) {
     return _jurysCollection.where("role", whereIn: ["president", "rapporteur", "examinateur"]).where("code", isEqualTo: code).snapshots().map((snapshot) {
       return snapshot.docs
           .map((doc) => UserModel(
@@ -48,15 +48,15 @@ class StudentService {
   }
 
 // TODO: A tester
-  Future<void> updateStudent(UserModel student) async {
-    await _jurysCollection.doc(student.id).update({
-      'name': student.name,
-      'email': student.email,
-      'age': student.age,
+  Future<void> updateJury(UserModel jury) async {
+    await _jurysCollection.doc(jury.id).update({
+      'name': jury.name,
+      'email': jury.email,
+      'age': jury.age,
     });
   }
 
-  Future<void> deleteStudent(String id) async {
+  Future<void> deleteJury(String id) async {
     await _jurysCollection.doc(id).delete();
   }
 }

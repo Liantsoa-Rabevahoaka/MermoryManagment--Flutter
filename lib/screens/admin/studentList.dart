@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/models/customTextField.dart';
-import 'package:gestion_de_soutenance/models/sessionSoutenance.dart';
-import 'package:gestion_de_soutenance/screens/admin/student_detail_screen.dart';
+import '../../models/customTextField.dart';
+import '../../models/sessionSoutenance.dart';
+import '../../screens/admin/student_detail_screen.dart';
 import '../../models/user_model.dart';
 import '../../services/student_service.dart';
 
@@ -15,12 +15,12 @@ class StudentList extends StatefulWidget {
 }
 
 class _CrudStudentListState extends State<StudentList> {
-
   String generateUniqueId() {
     DateTime now = DateTime.now();
     String id = '${now.microsecondsSinceEpoch}';
     return id;
   }
+
   final StudentService studentService = StudentService();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController parcoursController = TextEditingController();
@@ -35,7 +35,7 @@ class _CrudStudentListState extends State<StudentList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Listes des etudiants'),
+        title: Text('Listes des etudiants', style: TextStyle(color: Colors.redAccent)),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -52,7 +52,7 @@ class _CrudStudentListState extends State<StudentList> {
                       children: [
                         TextField(
                           controller: nameController,
-                          decoration: InputDecoration(labelText: 'Name'),
+                          decoration: InputDecoration(labelText: 'Nom'),
                         ),
                         SizedBox(height: 16),
                         TextField(
@@ -84,7 +84,7 @@ class _CrudStudentListState extends State<StudentList> {
 
                           // Utilisez userData.docs.isNotEmpty au lieu de sessionSnapshot.exists
                           UserModel student = UserModel(
-                            id: generateUniqueId(),// Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
+                            id: generateUniqueId(), // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
                             name: nom,
                             email: email,
                             age: age,
@@ -144,10 +144,18 @@ class _CrudStudentListState extends State<StudentList> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   List<UserModel> students = snapshot.data!;
+                  if (students.isEmpty) {
+                    return Center(
+                      child: Text("Il n'y a pas encore d'étudiants inscrits."),
+                    );
+                  }
                   return ListView.builder(
                     itemCount: students.length,
                     itemBuilder: (context, index) {
                       return Card(
+                         elevation: 4, // Ajout d'une ombre pour la carte
+      color: Color.fromARGB(255, 118, 189, 224), // Couleur de la carte
+      
                         child: ListTile(
                           // leading: Image.asset("assets/images/logo.png"),
                           title: Text(students[index].name),
@@ -178,9 +186,56 @@ class _CrudStudentListState extends State<StudentList> {
                               IconButton(
                                 icon: Icon(Icons.delete),
                                 onPressed: () {
-                                  // Delete student
-                                  studentService
-                                      .deleteStudent(students[index].id);
+                                  // Afficher une boîte de dialogue de confirmation
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Confirmation'),
+                                        content: Text(
+                                            'Voulez-vous vraiment supprimer cet élément ?'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('Annuler'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              studentService.deleteStudent(
+                                                  students[index].id);
+                                              Navigator.pop(
+                                                  context); // Fermer la boîte de dialogue de confirmation
+                                              // Afficher une boîte de dialogue de succès
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: Text(
+                                                        'Suppression réussie'),
+                                                    content: Text(
+                                                        'L\'élément a été supprimé avec succès.'),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context); // Fermer la boîte de dialogue de succès
+                                                        },
+                                                        child: Text('OK'),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            child: Text('Confirmer'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
                                 },
                               ),
                             ],

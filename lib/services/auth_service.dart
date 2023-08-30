@@ -55,8 +55,8 @@ class AuthService {
           role: userData.docs[0].get('role'),
           age: 22,
           password: '',
-          parcours: '',
-          code: '',
+          parcours: userData.docs[0].get('parcours'),
+          code: userData.docs[0].get('code'),
         );
       }
     } catch (e) {

@@ -7,7 +7,7 @@ class SessionModel {
   String time;
   int duration;
   String location;
-  String userId;
+  String emailStudent;
   double notes;
   String code;
   String comments1;
@@ -20,7 +20,7 @@ class SessionModel {
     required this.time,
     required this.duration,
     required this.location,
-    required this.userId,
+    required this.emailStudent,
     required this.notes,
     required this.comments2,
     required this.comments1,
@@ -38,7 +38,7 @@ class SessionModel {
       time: data['time'] ?? '',
       duration: data['duration'] ?? 0,
       location: data['location'] ?? '',
-      userId: data['userId'] ?? '',
+      emailStudent: data['emailStudent'] ?? '',
       notes: data['notes'] ?? 0,
       comments1: data['comments1'] ?? '',
       comments2: data['comments2'] ?? '',
@@ -53,7 +53,7 @@ class SessionModel {
       'time': time,
       'duration': duration,
       'location': location,
-      'userId': userId,
+      'emailStudent': emailStudent,
       'notes': notes,
       'comments1': comments1,
       'comments2': comments2,
@@ -70,7 +70,7 @@ class SessionModel {
       'time': time,
       'duration': duration,
       'location': location,
-      'userId': userId,
+      'emailStudent': emailStudent,
       'notes': notes,
       'comments1': comments1,
       'comments2': comments2,

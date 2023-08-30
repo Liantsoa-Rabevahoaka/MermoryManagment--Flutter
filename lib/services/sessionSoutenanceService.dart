@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:gestion_de_soutenance/models/sessionSoutenance.dart';
+import '../models/sessionSoutenance.dart';
 
 import '../models/session_model.dart';
 import '../utils/random.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/models/customTextField.dart';
-import 'package:gestion_de_soutenance/models/sessionSoutenance.dart';
-import 'student_detail_screen.dart';
+import '../../models/customTextField.dart';
+import '../../models/sessionSoutenance.dart';
+import 'jury_detail_screen.dart';
 import '../../models/user_model.dart';
 import '../../services/jury_service.dart';
 
@@ -20,7 +20,7 @@ class _JuryscreenState extends State<Juryscreen> {
     return id;
   }
 
-  final StudentService studentService = StudentService();
+  final JuryService juryService = JuryService();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController parcoursController = TextEditingController();
@@ -41,7 +41,7 @@ class _JuryscreenState extends State<Juryscreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Listes des jurys'),
+        title: Text('Listes des jurys', style: TextStyle(color: Colors.redAccent)),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -88,7 +88,7 @@ class _JuryscreenState extends State<Juryscreen> {
                           String password = passText.value;
                           String role = roleController.text.trim();
 
-                          UserModel student = UserModel(
+                          UserModel jury = UserModel(
                             id: generateUniqueId(), // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
                             name: name,
                             email: email,
@@ -99,7 +99,7 @@ class _JuryscreenState extends State<Juryscreen> {
                             code: '${widget.session.code}',
                           );
 
-                          studentService.addStudent(student);
+                          juryService.addJury(jury);
 
                           Navigator.of(context).pop();
                           showDialog(
@@ -139,20 +139,25 @@ class _JuryscreenState extends State<Juryscreen> {
           Expanded(
             child: StreamBuilder<List<UserModel>>(
               //Affichage etudiants
-              stream: studentService.getStudents('${widget.session.code}'),
+              stream: juryService.getJurys('${widget.session.code}'),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  List<UserModel> students = snapshot.data!;
+                  List<UserModel> jurys = snapshot.data!;
+                  if (jurys.isEmpty) {
+                    return Center(
+                      child: Text("Il n'y a pas encore de jury inscrits."),
+                    );
+                  }
                   return ListView.builder(
-                    itemCount: students.length,
+                    itemCount: jurys.length,
                     itemBuilder: (context, index) {
                       return ListTile(
                         //seulement nom et mail
-                        title: Text(students[index].name),
+                        title: Text(jurys[index].name),
                         subtitle: Column(
                           children: [
-                            Text(students[index].email),
-                            Text(students[index].role),
+                            Text(jurys[index].email),
+                            Text(jurys[index].role),
                           ],
                         ),
                         trailing: Row(
@@ -161,12 +166,12 @@ class _JuryscreenState extends State<Juryscreen> {
                             IconButton(
                               icon: Icon(Icons.remove_red_eye),
                               onPressed: () {
-                                // View student details
+                                // View jury details
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => StudentDetailScreen(
-                                      student: students[index],
+                                    builder: (context) => juryDetailScreen(
+                                      jury: jurys[index],
                                     ),
                                   ),
                                 );
@@ -175,17 +180,59 @@ class _JuryscreenState extends State<Juryscreen> {
                             IconButton(
                               icon: Icon(Icons.edit),
                               onPressed: () {
-                                _showEditDialog(context, students[index]);
+                                _showEditDialog(context, jurys[index]);
                               },
                             ),
                             IconButton(
                               icon: Icon(Icons.delete),
                               onPressed: () {
-                                // Delete student
-                                studentService
-                                    .deleteStudent(students[index].id);
+                                // Afficher une boîte de dialogue de confirmation
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Confirmation'),
+                                      content: Text('Voulez-vous vraiment supprimer ce jury ?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text('Annuler'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            // Supprimer le jury
+                                            await juryService.deleteJury(jurys[index].id);
+                                            Navigator.pop(context); // Fermer la boîte de dialogue de confirmation
+                                            // Afficher une boîte de dialogue de succès
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: Text('Suppression réussie'),
+                                                  content: Text('Un jury a été supprimé avec succès.'),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context); // Fermer la boîte de dialogue de succès
+                                                      },
+                                                      child: Text('OK'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          },
+                                          child: Text('Confirmer'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
                               },
                             ),
+
                           ],
                         ),
                       );
@@ -205,14 +252,14 @@ class _JuryscreenState extends State<Juryscreen> {
   }
 }
 
-void _showEditDialog(BuildContext context, UserModel student) {
-  TextEditingController idController = TextEditingController(text: student.id);
+void _showEditDialog(BuildContext context, UserModel jury) {
+  TextEditingController idController = TextEditingController(text: jury.id);
   TextEditingController nameController =
-      TextEditingController(text: student.name);
+      TextEditingController(text: jury.name);
   TextEditingController emailController =
-      TextEditingController(text: student.email);
+      TextEditingController(text: jury.email);
   TextEditingController ageController =
-      TextEditingController(text: student.age.toString());
+      TextEditingController(text: jury.age.toString());
 
   showDialog(
     context: context,
@@ -256,7 +303,7 @@ void _showEditDialog(BuildContext context, UserModel student) {
 
               // ignore: prefer_typing_uninitialized_variables
 
-              UserModel student = UserModel(
+              UserModel jury = UserModel(
                 id: id, // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
                 name: newName,
                 email: newEmail,
@@ -266,9 +313,9 @@ void _showEditDialog(BuildContext context, UserModel student) {
                 parcours: '',
                 code: '',
               );
-              StudentService studentService = StudentService();
+              JuryService juryService = JuryService();
 
-              studentService.updateStudent(student);
+              juryService.updateJury(jury);
 
               Navigator.pop(context);
             },

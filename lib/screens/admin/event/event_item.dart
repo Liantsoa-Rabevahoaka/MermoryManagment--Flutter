@@ -39,7 +39,7 @@ class EventItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  event.title?.isEmpty ?? true ? 'Disponible' : event.title!,
+                  event.title?.isEmpty ?? true ? 'Disponible' : 'Réservé',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,

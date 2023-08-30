@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/main.dart';
-import 'package:gestion_de_soutenance/models/customTextField.dart';
+import '../../main.dart';
+import '../../models/customTextField.dart';
 
 import '../../models/user_model.dart';
 import '../../services/student_service.dart';

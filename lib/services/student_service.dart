@@ -10,6 +10,8 @@ class StudentService {
   final CollectionReference _studentsCollection =
       FirebaseFirestore.instance.collection('Users');
 
+  final CollectionReference _sessionsCollection = FirebaseFirestore.instance.collection('Sessions');
+
   Future<void> addStudent(UserModel student) async {
     try {
       //final String password = RandomUtils.generatePassword();
@@ -60,4 +62,5 @@ class StudentService {
   Future<void> deleteStudent(String id) async {
     await _studentsCollection.doc(id).delete();
   }
+
 }

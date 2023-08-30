@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/models/sessionSoutenance.dart';
-import 'package:gestion_de_soutenance/screens/admin/joinSession.dart';
-import 'package:gestion_de_soutenance/services/sessionSoutenanceService.dart';
+import '../../models/sessionSoutenance.dart';
+import '../../screens/admin/joinSession.dart';
+import '../../services/sessionSoutenanceService.dart';
 
 import '../../main.dart';
 import '../../services/auth_service.dart';
@@ -26,7 +26,19 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text("My defence"),
+      title: Row(
+        children: [
+          CircleAvatar(
+              radius: 20.0, // Ajustez la taille de l'avatar en conséquence
+              backgroundImage: AssetImage('images/memory.png'), // Chemin de l'image dans les assets
+            ),
+             SizedBox(width: 23), // Add some spacing between avatar and title
+      Text(
+        'Administration', // Replace with your desired title
+        style: TextStyle(fontSize: 22, color: Colors.redAccent), // Adjust the font size as needed
+      ),
+        ],
+      ),
         actions: [
           IconButton(
             icon: Row(
@@ -48,131 +60,133 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           ),
         ],
       ),
-      body: Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "Bienvenue sur la page Admin🎓",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 150, 28, 28),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+          image: AssetImage('images/legend3.jpg'), // Chemin de l'image dans les assets
+          fit: BoxFit.cover,
+          ),
+        ),
+        child: Scaffold(
+          // backgroundColor: Colors.white,
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                 "Veuillez choisir l'un des options suivants:",
+                 textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 150, 28, 28),
+                  ),
                 ),
-              ),
-              SizedBox(height: 10), // Ajustement de l'espace
-              Text(
-                "Gestion de soutenances",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey[600],
+               
+                SizedBox(height: 30),
+                _buildColoredButton(
+                  onPressed: () {
+                   Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => joinSessionPage(),
+                      ),
+                    );
+                  },
+                  icon: Icons.arrow_circle_right,
+                  label: "Gerer une session",
+                  colors: [
+                    Color.fromRGBO(228, 86, 110, 1),
+                    Color.fromRGBO(232, 105, 55, 1)
+                  ],
                 ),
-              ),
-              SizedBox(height: 30),
-              _buildColoredButton(
-                onPressed: () {
-                 Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => joinSessionPage(),
-                    ),
-                  );
-                },
-                icon: Icons.arrow_circle_right,
-                label: "Gerer une session",
-                colors: [
-                  Color.fromRGBO(228, 86, 110, 1),
-                  Color.fromRGBO(232, 105, 55, 1)
-                ],
-              ),
-
-              SizedBox(height: 25),
-              _buildColoredButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Ajouter un nouveau session'),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            TextField(
-                              controller: anneeController,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(labelText: 'Annee'),
+      
+                SizedBox(height: 25),
+                _buildColoredButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Ajouter un nouveau session'),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextField(
+                                controller: anneeController,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(labelText: 'Annee'),
+                              ),
+                              SizedBox(height: 16),
+                              TextField(
+                                controller: typeController,
+                                decoration: InputDecoration(labelText: 'Type'),
+                              ),
+                              SizedBox(height: 16),
+                              TextField(
+                                controller: codeController,
+                                decoration: InputDecoration(labelText: 'Code'),
+                              ),
+                            ],
+                          ),
+                          actions: [
+                            ElevatedButton(
+                              onPressed: () {
+                                int annee = int.tryParse(anneeController.text) ?? 0;
+                                String code = codeController.text.trim();
+                                String type = typeController.text.trim();
+      
+                                SessionSoutenanceModel session = SessionSoutenanceModel(
+                                  id: '',
+                                  type: type, // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
+                                  annee: annee,
+                                  code: code,
+                                );
+      
+                               sessionSoutenanceService.addSession(session);
+      
+                                Navigator.of(context).pop();
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Session enregistré'),
+                                      content: Text(
+                                          'Une session a été crée avec succès.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) => MyApp(),
+                                              ),
+                                            );
+                                          },
+                                          child: Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              child: Text('Ajouter'),
                             ),
-                            SizedBox(height: 16),
-                            TextField(
-                              controller: typeController,
-                              decoration: InputDecoration(labelText: 'Type'),
-                            ),
-                            SizedBox(height: 16),
-                            TextField(
-                              controller: codeController,
-                              decoration: InputDecoration(labelText: 'Code'),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Annuler'),
                             ),
                           ],
-                        ),
-                        actions: [
-                          ElevatedButton(
-                            onPressed: () {
-                              int annee = int.tryParse(anneeController.text) ?? 0;
-                              String code = codeController.text.trim();
-                              String type = typeController.text.trim();
-
-                              SessionSoutenanceModel session = SessionSoutenanceModel(
-                                id: '',
-                                type: type, // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
-                                annee: annee,
-                                code: code,
-                              );
-
-                             sessionSoutenanceService.addSession(session);
-
-                              Navigator.of(context).pop();
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text('Session enregistré'),
-                                    content: Text(
-                                        'Une session a été crée avec succès.'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) => MyApp(),
-                                            ),
-                                          );
-                                        },
-                                        child: Text('OK'),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                            child: Text('Ajouter'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Annuler'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                icon: Icons.add_circle,
-                label: "Créer une nouvelle session",
-                colors: [Color.fromRGBO(68, 140, 216, 1), Color(0xFF1FE9F7)],
-              ),
-            ],
+                        );
+                      },
+                    );
+                  },
+                  icon: Icons.add_circle,
+                  label: "Créer une nouvelle session",
+                  colors: [Color.fromRGBO(68, 140, 216, 1), Color(0xFF1FE9F7)],
+                ),
+              ],
+            ),
           ),
         ),
       ),

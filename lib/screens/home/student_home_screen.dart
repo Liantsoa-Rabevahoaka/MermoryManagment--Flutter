@@ -1,8 +1,10 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
-import '../../main.dart';
+import '../../models/user_model.dart';
+import '../../screens/students/event_screen_student.dart';
 import '../../services/auth_service.dart';
-
+import '../../services/student_service.dart';
+import '../../main.dart';
 import '../admin/event/event_screen.dart';
 import '../students/indexStudent.dart';
 import '../students/planningStudent.dart';
@@ -21,6 +23,23 @@ class StudentHomeScreen extends StatefulWidget {
 class _StudentHomeScreenState extends State<StudentHomeScreen> {
   int _currentIndex = 0;
   int _counter = 0;
+  late Future<UserModel?> _currentUserFuture;
+  late List<Widget> _widgetOptions; // Declare the list without initialization
+
+  final AuthService _authService = AuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUserFuture = _authService.getCurrentUser();
+
+    // Initialize _widgetOptions after _currentUserFuture is assigned
+    _widgetOptions = <Widget>[
+      IndexStudent(userFuture: _currentUserFuture),
+      EventScreenStudent(userFuture: _currentUserFuture),
+      NoteStudent(userFuture: _currentUserFuture),
+    ];
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -28,19 +47,24 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
     });
   }
 
-  static List<Widget> _widgetOptions = <Widget>[
-    IndexStudent(),
-    EventScreen(),
-    NoteStudent(),
-  ];
-
   @override
   Widget build(BuildContext context) {
     AuthService _authService = AuthService();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Row(
+          children: [
+            CircleAvatar(
+              radius: 20.0, // Ajustez la taille de l'avatar en conséquence
+              backgroundImage: AssetImage('images/memory.png'), // Chemin de l'image dans les assets
+            ), SizedBox(width: 30),
+            Text(
+        'Etudiant', // Replace with your desired title
+        style: TextStyle(fontSize: 22, color: Colors.redAccent), // Adjust the font size as needed
+      ),
+          ],
+        ),
         actions: [
           // Bouton de déconnexion dans l'app bar
           IconButton(
@@ -73,7 +97,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
         items: <BottomNavyBarItem>[
           BottomNavyBarItem(
             icon: Icon(Icons.list),
-            title: Text('Lists'),
+            title: Text('A propos'),
             activeColor: Colors.red,
             textAlign: TextAlign.center,
           ),
@@ -85,7 +109,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
           ),
           BottomNavyBarItem(
             icon: Icon(Icons.bar_chart),
-            title: Text('Result'),
+            title: Text('Resultat'),
             activeColor: Colors.pink,
             textAlign: TextAlign.center,
           ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gestion_de_soutenance/models/sessionSoutenance.dart';
+import '../../models/sessionSoutenance.dart';
 import 'jurys_screen.dart';
 import 'student_detail_screen.dart';
 import '../../models/user_model.dart';
@@ -23,61 +23,85 @@ class _IndexState extends State<Index> {
     return Scaffold(
         body: Center(
           child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: Colors.redAccent,
-            child: Column(
-                children: [
-                  // Afficher les informations de session
-                  Column(
-                    children: [
-                      Text('Annee: ${widget.session.annee}'),
-                      Text('Type: ${widget.session.type}'),
-                      Text('Code d\' entree: ${widget.session.code}')
-                    ],
-                  ),
-                  // Espacement entre les informations de session et les boutons
-                  SizedBox(height: 20),
-                  // Boutons d'accès aux listes
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          onPrimary: Colors.white,
-                          primary: Colors.orange,
+            // width: double.infinity,
+            // height: double.infinity,
+            // color: Colors.redAccent,
+             decoration: BoxDecoration(
+          image: DecorationImage(
+          image: AssetImage('images/soutenance.jpg'), // Chemin de l'image dans les assets
+          fit: BoxFit.cover,
+          ),
+        ),
+            child: Center(
+              child: Column(
+                 mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Afficher les informations de session
+                    Column(
+                     
+                      children: [
+                        Text('Annee: ${widget.session.annee}',
+                          style: TextStyle(fontSize: 20, color: Colors.white),
                         ),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => StudentList(session: widget.session),
-                            ),
-                          );
-                        },
-                        child: Text('Voir la liste des étudiants'),
-                      ),
-                      Spacer(),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          onPrimary: Colors.white,
-                          primary: Colors.orange,
+                        Text('Type: ${widget.session.type}',
+                         style: TextStyle(fontSize: 20, color: Colors.white),
                         ),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => Juryscreen(session: widget.session),
+                        Text('Code d\' entree: ${widget.session.code}',
+                         style: TextStyle(fontSize: 20, color: Colors.white),
+                        )
+                      ],
+                    ),
+                    // Espacement entre les informations de session et les boutons
+                    SizedBox(height: 20),
+                    // Boutons d'accès aux listes
+                    Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              onPrimary: Colors.white,
+                              primary: Color.fromARGB(255, 5, 12, 66),
                             ),
-                          );
-                        },
-                        child: const Text('Voir la liste des Jury'),
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => StudentList(session: widget.session),
+                                ),
+                              );
+                            },
+                            child: Text('Voir la liste des étudiants'),
+                          ),
+                          Spacer(),
+                           SizedBox(height: 10), 
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              onPrimary: Colors.white,
+                              primary: Color.fromARGB(255, 5, 12, 66),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => Juryscreen(session: widget.session),
+                                ),
+                              );
+                            },
+                            child: const Text('Voir la liste des Jury'),
+                          ),
+                          SizedBox(height: 10),
+                        ],
                       ),
-                    ],
-                  ),
-                ]
+                    ),
+                  ]
+              ),
             ),
           ),
         )
     );
   }
 }
+
+
+  
