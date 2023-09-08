@@ -27,15 +27,35 @@ class SessionSoutenanceService {
     return _sessionSoutenanceCollection.snapshots().map((snapshot) {
       // Mapper les documents en objets SessionModel
       return snapshot.docs
-          .map((doc) => SessionSoutenanceModel(
-        id: doc.id,
-        annee: doc[
-        'annee'], // Assurez-vous que 'annee' est du type attendu dans SessionModel
-        type: doc[
-        'type'], // Assurez-vous que 'type' est du type attendu dans SessionModel
-        code: doc[
-        'code'], // Assurez-vous que 'code' est du type attendu dans SessionModel
-      ))
+          .map((doc) =>
+          SessionSoutenanceModel(
+            id: doc.id,
+            annee: doc[
+            'annee'],
+            // Assurez-vous que 'annee' est du type attendu dans SessionModel
+            type: doc[
+            'type'],
+            // Assurez-vous que 'type' est du type attendu dans SessionModel
+            code: doc[
+            'code'], // Assurez-vous que 'code' est du type attendu dans SessionModel
+          ))
+          .toList();
+    });
+  }
+
+  Stream<List<SessionSoutenanceModel>> getSession(String code) {
+    return _sessionSoutenanceCollection
+        .where("code", isEqualTo: code)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .map((doc) =>
+          SessionSoutenanceModel(
+            id: doc.id,
+            annee: doc['annee'],
+            type: doc['type'],
+            code: doc['code'],
+          ))
           .toList();
     });
   }

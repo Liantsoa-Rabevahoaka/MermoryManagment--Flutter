@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
 import '../../models/sessionSoutenance.dart';
+import '../../services/session_service.dart';
 import 'jurys_screen.dart';
 import 'student_detail_screen.dart';
 import '../../models/user_model.dart';
 import '../../services/student_service.dart';
 import 'studentList.dart';
 
-class Index extends StatefulWidget {
+class Index extends StatelessWidget {
 
   final SessionSoutenanceModel session;
 
   Index({required this.session});
 
+  final SessionService sessionService = SessionService();
 
-  @override
-  _IndexState createState() => _IndexState();
-}
-
-class _IndexState extends State<Index> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,17 +36,29 @@ class _IndexState extends State<Index> {
                   children: [
                     // Afficher les informations de session
                     Column(
-                     
+
                       children: [
-                        Text('Annee: ${widget.session.annee}',
-                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        Text('Année: ${session.annee}',
                         ),
-                        Text('Type: ${widget.session.type}',
-                         style: TextStyle(fontSize: 20, color: Colors.white),
+                        Text('Type: ${session.type}',
                         ),
-                        Text('Code d\' entree: ${widget.session.code}',
-                         style: TextStyle(fontSize: 20, color: Colors.white),
-                        )
+                        Text('Code d\' entrée: ${session.code}',
+                        ),
+                        FutureBuilder<int>(
+                          future: sessionService.getNumberOfStudentsInSession('${session.code}'), // Remplacez 'sessionCode' par le code de la session que vous souhaitez afficher
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return CircularProgressIndicator();
+                            } else if (snapshot.hasError) {
+                              return Text('Erreur: ${snapshot.error}');
+                            } else {
+                              final int numberOfStudents = snapshot.data ?? 0;
+                              return Center(
+                                child: Text('Nombre d\'étudiants inscrits : $numberOfStudents'),
+                              );
+                            }
+                          },
+                        ),
                       ],
                     ),
                     // Espacement entre les informations de session et les boutons
@@ -68,14 +77,14 @@ class _IndexState extends State<Index> {
                             onPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => StudentList(session: widget.session),
+                                  builder: (context) => StudentList(session: session),
                                 ),
                               );
                             },
                             child: Text('Voir la liste des étudiants'),
                           ),
                           Spacer(),
-                           SizedBox(height: 10), 
+                           SizedBox(height: 10),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               onPrimary: Colors.white,
@@ -84,7 +93,7 @@ class _IndexState extends State<Index> {
                             onPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => Juryscreen(session: widget.session),
+                                  builder: (context) => Juryscreen(session: session),
                                 ),
                               );
                             },

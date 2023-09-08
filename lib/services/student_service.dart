@@ -63,4 +63,27 @@ class StudentService {
     await _studentsCollection.doc(id).delete();
   }
 
+  Stream<List<UserModel>> searchStudents(String code, String searchKeyword) {
+    return _studentsCollection
+        .where("role", isEqualTo: "student")
+        .where("name", arrayContains: searchKeyword)
+        .where("code", isEqualTo: code)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .map((doc) => UserModel(
+        id: doc.id,
+        name: doc['name'],
+        email: doc['email'],
+        age: doc['age'],
+        password: '',
+        role: '',
+        parcours: '',
+        code: '',
+      ))
+          .toList();
+    });
+  }
+
+
 }

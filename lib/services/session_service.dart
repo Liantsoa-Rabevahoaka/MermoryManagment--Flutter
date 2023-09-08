@@ -73,6 +73,8 @@ import '../models/session_model.dart';
 class SessionService {
   final CollectionReference _sessionCollection =
   FirebaseFirestore.instance.collection('Sessions');
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
 
   Future<void> addSession(SessionModel session) async {
     try {
@@ -96,6 +98,9 @@ class SessionService {
           location: doc['location'] ?? '',
           emailStudent: doc['emailStudent'] ?? '',
           notes: doc['notes'] ?? '',
+          note1: doc['note1'] ?? '',
+          note2: doc['note2'] ?? '',
+          note3: doc['note3'] ?? '',
           comments1: doc['comments1'] ?? '',
           comments2: doc['comments2'] ?? '',
           comments3: doc['comments3'] ?? '',
@@ -135,7 +140,7 @@ class SessionService {
   Future<void> updateNotesPresident(String sessionId, double notes, String comments) async {
     try {
       await _sessionCollection.doc(sessionId).update({
-        'notes': notes,
+        'note1': notes,
         'comments1': comments, // Ajoutez le commentaire à la session
       });
     } catch (e) {
@@ -146,7 +151,7 @@ class SessionService {
   Future<void> updateNotesRapporteur(String sessionId, double notes, String comments) async {
     try {
       await _sessionCollection.doc(sessionId).update({
-        'notes': notes,
+        'note2': notes,
         'comments2': comments, // Ajoutez le commentaire à la session
       });
     } catch (e) {
@@ -157,11 +162,27 @@ class SessionService {
   Future<void> updateNotesExaminateur(String sessionId, double notes, String comments) async {
     try {
       await _sessionCollection.doc(sessionId).update({
-        'notes': notes,
+        'note3': notes,
         'comments3': comments, // Ajoutez le commentaire à la session
       });
     } catch (e) {
       print('Error updating notes: $e');
     }
   }
+
+  Future<int> getNumberOfStudentsInSession(String sessionCode) async {
+    try {
+      final QuerySnapshot snapshot = await _firestore
+          .collection('Users')
+          .where('code', isEqualTo: sessionCode)
+          .where('role', isEqualTo: 'student')
+          .get();
+
+      return snapshot.docs.length;
+    } catch (e) {
+      print('Erreur lors de la récupération du nombre d\'étudiants: $e');
+      return 0; // Gérer les erreurs ici
+    }
+  }
+
 }

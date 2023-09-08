@@ -78,10 +78,13 @@ class _AddEventState extends State<AddEvent> {
           title: '',
           date: currentDate,
           time: selectedTime.toString(),
-          duration: int.parse(duration),
+          duration: double.parse(duration),
           location: location,
           emailStudent: '',
           notes: 0,
+          note1: 0,
+          note2: 0,
+          note3: 0,
           comments1: '',
           comments2: '',
           comments3: '',
@@ -93,7 +96,8 @@ class _AddEventState extends State<AddEvent> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Succès'),
-              content: Text('La session a été ajoutée avec succès à la base de données.'),
+              content: Text(
+                  'La session a été ajoutée avec succès à la base de données.'),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -110,8 +114,6 @@ class _AddEventState extends State<AddEvent> {
         setState(() {
           _isLoaderVisible = false;
         });
-
-
       }
     } on Exception catch (e) {
       setState(() {
@@ -138,21 +140,61 @@ class _AddEventState extends State<AddEvent> {
             TimePicker(
                 selectedTime: selectedTime,
                 updateSelectedTime: updateSelectedTime),
-            TextField(
-              controller: _durationController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Duree en heure'),
+            SizedBox(height: 16),
+            Column(
+              children: [
+                // Ajoute un espace entre les widgets
+                Text(
+                  'Durée en heure',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Durée:   '),
+                    Expanded(
+                      child: TextField(
+                        controller: _durationController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Entrez la durée',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            TextField(
-              controller: _lcoationController,
-              decoration: InputDecoration(labelText: 'Lieu'),
+            SizedBox(height: 16),
+            Column(
+              children: [
+                // Ajoute un espace entre les widgets
+                Text(
+                  'Lieu',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Lieu:      '),
+                    Expanded(
+                      child: TextField(
+                        controller: _lcoationController,
+                        decoration: InputDecoration(
+                          hintText: 'Entrez le lieu',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 _saveEvent();
               },
-              child: Text('Ajouter'),
+              child: Text('Ajouter', textAlign: TextAlign.center),
             ),
           ],
         ),

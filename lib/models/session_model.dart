@@ -5,10 +5,13 @@ class SessionModel {
   String? title;
   DateTime date;
   String time;
-  int duration;
+  double duration;
   String location;
   String emailStudent;
   double notes;
+  double note1;
+  double note2;
+  double note3;
   String code;
   String comments1;
   String comments2;
@@ -22,6 +25,9 @@ class SessionModel {
     required this.location,
     required this.emailStudent,
     required this.notes,
+    required this.note1,
+    required this.note2,
+    required this.note3,
     required this.comments2,
     required this.comments1,
     required this.comments3,
@@ -40,6 +46,9 @@ class SessionModel {
       location: data['location'] ?? '',
       emailStudent: data['emailStudent'] ?? '',
       notes: data['notes'] ?? 0,
+      note1: data['note1'] ?? 0,
+      note2: data['note2'] ?? 0,
+      note3: data['note3'] ?? 0,
       comments1: data['comments1'] ?? '',
       comments2: data['comments2'] ?? '',
       comments3: data['comments3'] ?? '',

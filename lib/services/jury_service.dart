@@ -31,7 +31,7 @@ class JuryService {
 
 // TODO: Ajout des champs si necessaire
   Stream<List<UserModel>> getJurys(code) {
-    return _jurysCollection.where("role", whereIn: ["president", "rapporteur", "examinateur"]).where("code", isEqualTo: code).snapshots().map((snapshot) {
+    return _jurysCollection.where("role", whereIn: ["président", "rapporteur", "examinateur"]).where("code", isEqualTo: code).snapshots().map((snapshot) {
       return snapshot.docs
           .map((doc) => UserModel(
                 id: doc.id,
@@ -43,6 +43,23 @@ class JuryService {
                 parcours: '',
                 code: '',
               ))
+          .toList();
+    });
+  }
+
+  Stream<List<UserModel>> getJurysRole(code, role) {
+    return _jurysCollection.where("role", isEqualTo: role).where("code", isEqualTo: code).snapshots().map((snapshot) {
+      return snapshot.docs
+          .map((doc) => UserModel(
+        id: doc.id,
+        name: doc['name'],
+        email: doc['email'],
+        age: doc['age'],
+        password: '',
+        role: doc['role'],
+        parcours: doc['parcours'],
+        code: '',
+      ))
           .toList();
     });
   }

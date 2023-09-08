@@ -37,6 +37,9 @@ class _EditEventState extends State<EditEvent> {
   late TextEditingController _lcoationController;
   late TextEditingController _titleController;
   late TextEditingController _notesController;
+  late TextEditingController _note1Controller;
+  late TextEditingController _note2Controller;
+  late TextEditingController _note3Controller;
   late TextEditingController _comments1Controller;
   late TextEditingController _comments3Controller;
   late TextEditingController _comments2Controller;
@@ -104,7 +107,7 @@ class _EditEventState extends State<EditEvent> {
         _editEvent();
       } else if (isStudent(context)) {
         _registerEvent();
-      } else if (isTeacher(context)){
+      } else if (isTeacher(context)) {
         _noteEvent();
       }
     } on Exception catch (e) {
@@ -131,14 +134,17 @@ class _EditEventState extends State<EditEvent> {
         title: '',
         date: currentDate,
         time: selectedTime.toString(),
-        duration: int.parse(duration),
+        duration: double.parse(duration),
         location: location,
         emailStudent: '',
         notes: 0,
+        note1: 0,
+        note2: 0,
+        note3: 0,
         comments1: '',
         comments2: '',
         comments3: '',
-        code:  widget.sessionModel.code,
+        code: widget.sessionModel.code,
       );
 
       await _sessionService.updateSession(
@@ -187,14 +193,18 @@ class _EditEventState extends State<EditEvent> {
         title: title,
         date: currentDate,
         time: selectedTime.toString(),
-        duration: int.parse(duration),
+        duration: double.parse(duration),
         location: location,
-        emailStudent: user.uid, // Utiliser l'ID de l'utilisateur actuel s'il existe
+        emailStudent:
+            user.uid, // Utiliser l'ID de l'utilisateur actuel s'il existe
         notes: 0,
+        note1: 0,
+        note2: 0,
+        note3: 0,
         comments1: '',
         comments2: '',
         comments3: '',
-        code:  widget.sessionModel.code,
+        code: widget.sessionModel.code,
       );
 
       await _sessionService.updateSession(
@@ -219,6 +229,9 @@ class _EditEventState extends State<EditEvent> {
     final String location = _lcoationController.text;
     final String title = _titleController.text;
     final String notes = _notesController.text;
+    final String note1 = _note1Controller.text;
+    final String note2 = _note2Controller.text;
+    final String note3 = _note3Controller.text;
     final String comments1 = _comments1Controller.text;
     final String comments2 = _comments2Controller.text;
     final String comments3 = _comments3Controller.text;
@@ -234,10 +247,13 @@ class _EditEventState extends State<EditEvent> {
         title: title,
         date: currentDate,
         time: selectedTime.toString(),
-        duration: int.parse(duration),
+        duration: double.parse(duration),
         location: location,
         emailStudent: '',
         notes: double.parse(notes),
+        note1: double.parse(note1),
+        note2: double.parse(note2),
+        note3: double.parse(note3),
         comments1: comments1,
         comments2: comments2,
         comments3: comments3,
@@ -255,19 +271,16 @@ class _EditEventState extends State<EditEvent> {
       Navigator.pop(context, true);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          (isAdmin(context)
-              ? 'Modifier un evenement'
-              : isStudent(context)
-                  ? 'Inscription'
-                  : 'Noter'),
+          ('Modifier un evenement'),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,52 +294,198 @@ class _EditEventState extends State<EditEvent> {
                 enabled: isAdmin(context),
                 selectedTime: DateUtil.parseDateTime(widget.sessionModel.time),
                 updateSelectedTime: updateSelectedTime),
-            TextField(
-              enabled: isAdmin(context),
-              controller: _durationController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Duree en heure'),
+            Column(
+              children: [
+                // Ajoute un espace entre les widgets
+                Text(
+                  'Durée en heure',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Durée:   '),
+                    Expanded(
+                      child: TextField(
+                        controller: _durationController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Entrez le lieu...',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            TextField(
-              enabled: isAdmin(context),
-              controller: _lcoationController,
-              decoration: InputDecoration(labelText: 'Lieu'),
+            Column(
+              children: [
+                // Ajoute un espace entre les widgets
+                Text(
+                  'Lieu',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Lieu:       '),
+                    Expanded(
+                      child: TextField(
+                        controller: _lcoationController,
+                        decoration: InputDecoration(
+                          hintText: 'Entrez le lieu...',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            TextField(
-              enabled: isStudent(context),
-              controller: _titleController,
-              decoration: InputDecoration(labelText: 'Entrez ici votre Theme'),
+            SizedBox(height: 20),
+            Column(
+              children: [
+                // Ajoute un espace entre les widgets
+                Text(
+                  'Informations Sur le Soutenance',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: <Widget>[
+                      DataTable(
+                        columns: [
+                          DataColumn(label: Text('Titre')),
+                          DataColumn(label: Text('Note 1')),
+                          DataColumn(label: Text('Note 2')),
+                          DataColumn(label: Text('Note 3')),
+                          DataColumn(label: Text('Total')),
+                          DataColumn(label: Text('Mention')),
+                        ],
+                        rows: [
+                          DataRow(cells: [
+                            DataCell(
+                              TextField(
+                                controller: _titleController,
+                                decoration: InputDecoration(
+                                  hintText: '',
+                                ),
+                              ),
+                            ),
+                            DataCell(
+                              TextField(
+                                controller: _notesController,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            DataCell(
+                              TextField(
+                                controller: _notesController,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            DataCell(
+                              TextField(
+                                controller: _notesController,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            DataCell(
+                              TextField(
+                                controller: _notesController,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            DataCell(Text('')),
+                          ])
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            TextField(
-              enabled: isTeacher(context),
-              controller: _notesController,
-              decoration: InputDecoration(labelText: 'Notes'),
+            SizedBox(height: 20),
+            Column(
+              children: [
+                // Ajoute un espace entre les widgets
+                Text(
+                  'Commentaires du Président des Jury (1)',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Note:   '),
+                    Expanded(
+                      child: TextField(
+                        controller: _comments1Controller,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Vide',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            TextField(
-              enabled: isTeacher(context),
-              controller: _comments1Controller,
-              decoration: InputDecoration(labelText: 'Commentaires du président'),
+            SizedBox(height: 20),
+            Column(
+              children: [
+                // Ajoute un espace entre les widgets
+                Text(
+                  'Commentaires de  l\' Examinateur (2)',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Note:   '),
+                    Expanded(
+                      child: TextField(
+                        controller: _comments2Controller,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Vide',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            TextField(
-              enabled: isTeacher(context),
-              controller: _comments2Controller,
-              decoration: InputDecoration(labelText: 'Commentaires du Examinateur'),
-            ),
-            TextField(
-              enabled: isTeacher(context),
-              controller: _comments3Controller,
-              decoration: InputDecoration(labelText: 'Commentaires du Rapporteur'),
+            SizedBox(height: 20),
+            Column(
+              children: [
+                // Ajoute un espace entre les widgets
+                Text(
+                  'Commentaires du Rapporteur (3)',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Note:   '),
+                    Expanded(
+                      child: TextField(
+                        controller: _comments3Controller,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Vide',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 _saveEvent();
               },
-              child: Text(isAdmin(context)
-                  ? 'Modifier'
-                  : isStudent(context)
-                      ? 'S\'inscrire '
-                      : 'Noter'),
+              child: Text('Modifier'),
             ),
           ],
         ),

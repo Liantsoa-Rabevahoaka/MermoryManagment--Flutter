@@ -1,17 +1,33 @@
-import 'package:flutter/material.dart' show BorderRadius, BorderSide, Colors, InputDecoration, OutlineInputBorder, Radius, TextEditingController, TextFormField, TextStyle;
+import 'package:flutter/material.dart'
+    show
+        BorderRadius,
+        BorderSide,
+        Colors,
+        Icon,
+        IconButton,
+        Icons,
+        InputDecoration,
+        OutlineInputBorder,
+        Radius,
+        TextEditingController,
+        TextFormField,
+        TextSelection,
+        TextStyle;
 
 class CustomTextField {
   final String title;
   final String placeholder;
-  final bool ispass;
+  late final bool ispass;
   String error;
   late TextEditingController controller;
+ // late Function(bool) onTogglePassword;
 
   CustomTextField({
     required this.title,
     required this.placeholder,
     this.ispass = false,
     this.error = '',
+   // required this.onTogglePassword,
   }) {
     controller = TextEditingController();
   }
@@ -33,11 +49,17 @@ class CustomTextField {
             color: Colors.redAccent,
           ),
         ),
+        /**suffixIcon: IconButton(
+    icon: Icon(ispass ? Icons.visibility : Icons.visibility_off),
+    onPressed: () {
+    onTogglePassword(!ispass); // Appeler la fonction de rappel avec le nouvel état
+    },
+    ),**/
       ),
     );
   }
 
-  String get value{
+  String get value {
     return controller.text;
   }
 }

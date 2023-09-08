@@ -30,12 +30,85 @@ class _CrudStudentListState extends State<StudentList> {
       title: 'Mot de passe', placeholder: '*****', ispass: true);
   CustomTextField confirmPassText = CustomTextField(
       title: 'Confirmer mot de passe', placeholder: '*****', ispass: true);
+  bool isSearchEmpty = true;
+  String searchKeyword = '';
+
+  void _sendSearchQuery() {
+    if (searchKeyword.isNotEmpty) {
+      // Mettez à jour l'interface utilisateur avec les résultats de la recherche
+      // Par exemple, utilisez une ListView.builder pour afficher les résultats sous forme de cartes
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Résultats de la recherche'),
+            content: StreamBuilder<List<UserModel>>(
+              stream: studentService.searchStudents(
+                  '${widget.session.code}', searchKeyword),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  List<UserModel> students = snapshot.data!;
+                  if (students.isEmpty) {
+                    return Center(
+                      child: Text("Aucune résultat."),
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: students.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        child: ListTile(
+                          title: Text(students![index].name),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.remove_red_eye),
+                                onPressed: () {
+                                  // View student details
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => StudentDetailScreen(
+                                        student: students[index],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('Erreur lors de la recherche');
+                } else {
+                  return CircularProgressIndicator(); // Affichez un indicateur de chargement pendant la recherche
+                }
+              },
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Fermer'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Listes des etudiants', style: TextStyle(color: Colors.redAccent)),
+        title: Text('Listes des etudiants',
+            style: TextStyle(color: Colors.redAccent)),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -47,31 +120,33 @@ class _CrudStudentListState extends State<StudentList> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: Text('Ajouter un etudiant'),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextField(
-                          controller: nameController,
-                          decoration: InputDecoration(labelText: 'Nom'),
-                        ),
-                        SizedBox(height: 16),
-                        TextField(
-                          controller: emailController,
-                          decoration: InputDecoration(labelText: 'Email'),
-                        ),
-                        TextField(
-                          controller: parcoursController,
-                          decoration: InputDecoration(labelText: 'Parcours'),
-                        ),
-                        SizedBox(height: 16),
-                        TextField(
-                          controller: ageController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(labelText: 'Age'),
-                        ),
-                        SizedBox(height: 16),
-                        passText.textFormField(),
-                      ],
+                    content: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextField(
+                            controller: nameController,
+                            decoration: InputDecoration(labelText: 'Nom'),
+                          ),
+                          SizedBox(height: 16),
+                          TextField(
+                            controller: emailController,
+                            decoration: InputDecoration(labelText: 'Email'),
+                          ),
+                          TextField(
+                            controller: parcoursController,
+                            decoration: InputDecoration(labelText: 'Parcours'),
+                          ),
+                          SizedBox(height: 16),
+                          TextField(
+                            controller: ageController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(labelText: 'Age'),
+                          ),
+                          SizedBox(height: 16),
+                          passText.textFormField(),
+                        ],
+                      ),
                     ),
                     actions: [
                       ElevatedButton(
@@ -137,6 +212,7 @@ class _CrudStudentListState extends State<StudentList> {
             },
             child: Text('Ajouter un étudiant'),
           ),
+          SizedBox(height: 20),
           Expanded(
             child: StreamBuilder<List<UserModel>>(
               //Affichage etudiants
@@ -153,9 +229,10 @@ class _CrudStudentListState extends State<StudentList> {
                     itemCount: students.length,
                     itemBuilder: (context, index) {
                       return Card(
-                         elevation: 4, // Ajout d'une ombre pour la carte
-      color: Color.fromARGB(255, 118, 189, 224), // Couleur de la carte
-      
+                        elevation: 4, // Ajout d'une ombre pour la carte
+                        color: Color.fromARGB(
+                            255, 118, 189, 224), // Couleur de la carte
+
                         child: ListTile(
                           // leading: Image.asset("assets/images/logo.png"),
                           title: Text(students[index].name),
@@ -252,6 +329,31 @@ class _CrudStudentListState extends State<StudentList> {
               },
             ),
           ),
+          TextField(
+            onChanged: (value) {
+              setState(() {
+                isSearchEmpty = value.isEmpty;
+                searchKeyword = value; // Mettez à jour le mot-clé de recherche à chaque changement
+              });
+            },
+            decoration: InputDecoration(
+              hintText: 'Rechercher...',
+              prefixIcon: Icon(Icons.search),
+              suffixIcon: isSearchEmpty
+                  ? null
+                  : InkWell(
+                      // Utilisez InkWell pour rendre l'icône cliquable
+                      onTap: () {
+                        // Effectuez l'action souhaitée lorsque l'utilisateur clique sur l'icône
+                        _sendSearchQuery();
+                      },
+                      child: Icon(Icons.send),
+                    ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0)),
+              ),
+            ),
+          )
         ],
       ),
     );

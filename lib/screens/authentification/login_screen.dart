@@ -92,30 +92,40 @@ class _LoginScreenState extends State<LoginScreen> {
                                 });
 
                                 String errorMessage =
-                                    'Une erreur s\'est produite lors de la connexion. Veuillez réessayer.';
+                                    "Une erreur s'est produite lors de la connexion. Veuillez réessayer.";
 
                                 if (e is FirebaseAuthException) {
                                   if (e.code == 'user-not-found') {
-                                    errorMessage =
-                                        'Aucun utilisateur trouvé avec cet email.';
+                                    errorMessage = "Aucun utilisateur trouvé avec cet email.";
                                   } else if (e.code == 'wrong-password') {
-                                    errorMessage =
-                                        'Mot de passe incorrect pour cet utilisateur.';
+                                    errorMessage = "Mot de passe incorrect pour cet utilisateur.";
                                   } else if (e.code == 'invalid-email') {
-                                    errorMessage =
-                                        'Format d\'adresse email invalide.';
+                                    errorMessage = "Format d'adresse email invalide.";
                                   }
                                 }
 
-                                errorMessage ??=
-                                    'Une erreur s\'est produite lors de la connexion. Veuillez réessayer.';
-
-                                setState(() {
-                                  emailText.error = errorMessage;
-                                  passText.error = errorMessage;
-                                });
-
-                                print('LoginScreen Error: $e');
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: Text('Erreur Authentification'),
+                                      content: Text(errorMessage),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(); // Close the dialog
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) => MyApp(),
+                                              ),
+                                            );
+                                          },
+                                          child: Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
                               }
                             },
                             style: ElevatedButton.styleFrom(
