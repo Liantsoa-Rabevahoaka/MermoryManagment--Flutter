@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../components/loader/loader.dart';
@@ -20,14 +21,16 @@ class _LoginScreenState extends State<LoginScreen> {
   final AuthService _authService = AuthService();
   CustomTextField emailText =
       CustomTextField(title: 'Email', placeholder: 'Votre adresse email');
-  CustomTextField passText = CustomTextField(
-      title: 'Mot de passe', placeholder: '*****', ispass: true);
+  TextEditingController controller = TextEditingController();
+  bool isPasswordVisible =
+      false; // Initialise l'état de la visibilité du mot de passe à false
+  String searchKeyword = '';
+  bool isSearchEmpty = true;
 
   final _key = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     emailText.error = "Veuillez entrer votre adresse email";
-    passText.error = "Veuillez entrer votre mot de passe";
 
     return Scaffold(
       body: Container(
@@ -60,73 +63,109 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(
                             height: 10,
                           ),
-                          passText.textFormField(),
+                          // passText.textFormField(),
+
+                          TextFormField(
+                            onChanged: (value) {
+                              setState(() {
+                                isSearchEmpty = value.isEmpty;
+                                searchKeyword =
+                                    value; // Mettez à jour le mot-clé de recherche à chaque changement
+                              });
+                            },
+                            controller: controller,
+                            validator: (e) => e?.isEmpty ?? true
+                                ? 'Veuillez entrer votre Mot de passe'
+                                : null,
+                            obscureText:
+                                !isPasswordVisible, // Utilise l'état inversé pour définir obscureText
+                            decoration: InputDecoration(
+                              hintText: '*****',
+                              labelText: 'Mot de passe',
+                              labelStyle:
+                                  const TextStyle(color: Colors.redAccent),
+                              border: const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(1)),
+                              ),
+                              focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.redAccent,
+                                ),
+                              ),
+                              suffixIcon: isSearchEmpty
+                                  ? null
+                                  : InkWell(
+                                      // Utilisez InkWell pour rendre l'icône cliquable
+                                      onTap: () {
+                                        setState(() {
+                                          isPasswordVisible =
+                                              !isPasswordVisible;
+                                        });
+                                      },
+                                      child: Icon(
+                                        isPasswordVisible
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                      ),
+                                    ),
+                            ),
+                          ),
+
                           const SizedBox(
                             height: 10,
                           ),
                           ElevatedButton(
                             onPressed: () async {
-                              try {
-                                String email = emailText
-                                    .value; // Déplacer la définition de la variable email ici
-                                String password = passText.value;
+                              String email = emailText.value;
+                              String password = controller.text;
 
-                                setState(() {
-                                  _isLoaderVisible = true;
-                                });
+                              // Affiche le loader
+                              setState(() {
+                                _isLoaderVisible = true;
+                              });
 
-                                if (_key.currentState?.validate() ?? false) {
+                              if (_key.currentState?.validate() ?? false) {
+                                QuerySnapshot<Object?> loginData =
+                                    await FirebaseFirestore.instance
+                                        .collection('Users')
+                                        .where('email', isEqualTo: email)
+                                        .limit(1)
+                                        .get();
+
+                                if (loginData.docs.isNotEmpty) {
                                   User? user = await _authService
                                       .signInWithEmail(email, password);
 
                                   if (user != null) {
+                                    // Gère la connexion réussie
                                     await handleLoggedInUser(true, context);
-                                  }
-                                }
-                                setState(() {
-                                  _isLoaderVisible = false;
-                                });
-                              } catch (e) {
-                                setState(() {
-                                  _isLoaderVisible = false;
-                                });
-
-                                String errorMessage =
-                                    "Une erreur s'est produite lors de la connexion. Veuillez réessayer.";
-
-                                if (e is FirebaseAuthException) {
-                                  if (e.code == 'user-not-found') {
-                                    errorMessage = "Aucun utilisateur trouvé avec cet email.";
-                                  } else if (e.code == 'wrong-password') {
-                                    errorMessage = "Mot de passe incorrect pour cet utilisateur.";
-                                  } else if (e.code == 'invalid-email') {
-                                    errorMessage = "Format d'adresse email invalide.";
-                                  }
-                                }
-
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      title: Text('Erreur Authentification'),
-                                      content: Text(errorMessage),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop(); // Close the dialog
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (context) => MyApp(),
-                                              ),
-                                            );
-                                          },
-                                          child: Text('OK'),
+                                  } else {
+                                    // Mot de passe incorrect
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Mot de passe incorrect. Veuillez réessayer.',
                                         ),
-                                      ],
+                                      ),
                                     );
-                                  },
-                                );
+                                  }
+                                } else {
+                                  // Adresse email n'existe pas dans la base de données
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Aucun utilisateur trouvé avec cet email. Veuillez vous inscrire.',
+                                      ),
+                                    ),
+                                  );
+                                }
                               }
+
+                              // Masque le loader
+                              setState(() {
+                                _isLoaderVisible = false;
+                              });
                             },
                             style: ElevatedButton.styleFrom(
                               primary: Colors.redAccent.withOpacity(.7),
@@ -140,6 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   TextStyle(color: Colors.white, fontSize: 20),
                             ),
                           ),
+
                           const SizedBox(
                             height: 10,
                           ),
@@ -169,4 +209,25 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+}
+
+void handleFirebaseError(BuildContext context, dynamic error) {
+  String errorMessage =
+      "Une erreur s'est produite lors de la connexion. Veuillez réessayer.";
+
+  if (error is FirebaseAuthException) {
+    if (error.code == 'user-not-found') {
+      errorMessage = "Aucun utilisateur trouvé avec cet email.";
+    } else if (error.code == 'wrong-password') {
+      errorMessage = "Mot de passe incorrect pour cet utilisateur.";
+    } else if (error.code == 'invalid-email') {
+      errorMessage = "Format d'adresse email invalide.";
+    }
+  }
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(errorMessage),
+    ),
+  );
 }
