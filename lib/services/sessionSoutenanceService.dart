@@ -43,7 +43,7 @@ class SessionSoutenanceService {
     });
   }
 
-  Stream<List<SessionSoutenanceModel>> getSession(String code) {
+  Stream<List<SessionSoutenanceModel>> getSession(String? code) {
     return _sessionSoutenanceCollection
         .where("code", isEqualTo: code)
         .snapshots()

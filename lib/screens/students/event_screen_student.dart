@@ -10,8 +10,10 @@ import 'package:gestion_de_soutenance/models/user_model.dart';
 import 'package:gestion_de_soutenance/services/session_service.dart';
 import 'package:intl/intl.dart';
 
+import '../../services/auth_service.dart';
 import '../../services/jury_service.dart';
 import '../../services/sessionSoutenanceService.dart';
+import 'noteStudent.dart';
 
 class EventScreenStudent extends StatefulWidget {
   final Future<UserModel?> userFuture;
@@ -21,11 +23,13 @@ class EventScreenStudent extends StatefulWidget {
   @override
   _EventScreenStudentState createState() => _EventScreenStudentState();
 }
-final SessionSoutenanceService sessionSoutenanceService = SessionSoutenanceService();
+
+final SessionSoutenanceService sessionSoutenanceService =
+    SessionSoutenanceService();
 
 class _EventScreenStudentState extends State<EventScreenStudent> {
   late CollectionReference sessionsCollection;
-  late String userCode;
+  late String? userCode = null;
   late String userEmail;
   late String userName;
   late String userParcours;
@@ -33,23 +37,22 @@ class _EventScreenStudentState extends State<EventScreenStudent> {
   final SessionService _sessionService = SessionService();
   final user = FirebaseAuth.instance.currentUser;
   final JuryService juryService = JuryService();
+  late Future<UserModel?> _currentUserFuture;
+  List<Widget> _widgetOptions = [];
+  final AuthService _authService = AuthService();
 
   Color _getRandomColor() {
     final List<Color> colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
-      Colors.teal,
+     Colors.redAccent
     ];
     final randomIndex = Random().nextInt(colors.length);
     return colors[randomIndex];
   }
 
-
-
   @override
   void initState() {
     super.initState();
+    _currentUserFuture = _authService.getCurrentUser();
     sessionsCollection = FirebaseFirestore.instance.collection('Sessions');
 
     widget.userFuture.then((user) {
@@ -67,74 +70,73 @@ class _EventScreenStudentState extends State<EventScreenStudent> {
   Widget build(BuildContext context) {
     final bgColor = _getRandomColor();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Planning de votre Soutenance'),
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream:
-            sessionsCollection.where("code", isEqualTo: userCode).snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Loader();
-          }
+    if (userCode != null) {
+      return Scaffold(
+       
+        body: StreamBuilder<QuerySnapshot>(
+          stream:
+              sessionsCollection.where("code", isEqualTo: userCode).snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Loader();
+            }
 
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(
-              child: Text('Il n\' y a pas encore une session disponible'),
-            );
-          }
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return Center(
+                child: Text('Il n\' y a pas encore une session disponible'),
+              );
+            }
 
-          final List<SessionModel> sessions =
-              snapshot.data!.docs.map((sessionData) {
-            return SessionModel(
-              id: sessionData.id,
-              title: sessionData['title'],
-              date: (sessionData['date'] as Timestamp).toDate(),
-              time: sessionData['time'],
-              duration: sessionData['duration'],
-              location: sessionData['location'],
-              emailStudent: sessionData['emailStudent'],
-              notes: sessionData['notes'],
-              note1: sessionData['note1'],
-              note2: sessionData['note2'],
-              note3: sessionData['note3'],
-              comments1: sessionData['comments1'],
-              comments2: sessionData['comments2'],
-              comments3: sessionData['comments3'],
-              code: sessionData['code'],
-            );
-          }).toList();
+            final List<SessionModel> sessions =
+                snapshot.data!.docs.map((sessionData) {
+              return SessionModel(
+                id: sessionData.id,
+                title: sessionData['title'],
+                date: (sessionData['date'] as Timestamp).toDate(),
+                time: sessionData['time'],
+                 duration: sessionData['duration'].toDouble(),
+                location: sessionData['location'],
+                emailStudent: sessionData['emailStudent'],
+               notes: sessionData['notes'].toDouble(),
+              note1: sessionData['note1'].toDouble(),
+              note2: sessionData['note2'].toDouble(),
+              note3: sessionData['note3'].toDouble(),
+                comments1: sessionData['comments1'],
+                comments2: sessionData['comments2'],
+                comments3: sessionData['comments3'],
+                code: sessionData['code'],
+              );
+            }).toList();
 
-          final bool hasMatchingSession =
-              sessions.any((session) => userEmail == session.emailStudent);
+            final bool hasMatchingSession =
+                sessions.any((session) => userEmail == session.emailStudent);
 
-          return hasMatchingSession
-              ? ListView.builder(
-                  itemCount: snapshot.data!.docs.length,
-                  itemBuilder: (context, index) {
-                    final sessionData = snapshot.data!.docs[index];
-                    final session = SessionModel(
-                      id: sessionData.id,
-                      title: sessionData['title'],
-                      date: (sessionData['date'] as Timestamp).toDate(),
-                      time: sessionData['time'],
-                      duration: sessionData['duration'],
-                      location: sessionData['location'],
-                      emailStudent: sessionData['emailStudent'],
-                      notes: sessionData['notes'],
-                      note1: sessionData['note1'],
-                      note2: sessionData['note2'],
-                      note3: sessionData['note3'],
-                      comments1: sessionData['comments1'],
-                      comments2: sessionData['comments2'],
-                      comments3: sessionData['comments3'],
-                      code: sessionData['code'],
-                    );
+            return hasMatchingSession
+                ? ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      final sessionData = snapshot.data!.docs[index];
+                      final session = SessionModel(
+                        id: sessionData.id,
+                        title: sessionData['title'],
+                        date: (sessionData['date'] as Timestamp).toDate(),
+                        time: sessionData['time'],
+                         duration: sessionData['duration'].toDouble(),
+                        location: sessionData['location'],
+                        emailStudent: sessionData['emailStudent'],
+                       notes: sessionData['notes'].toDouble(),
+                      note1: sessionData['note1'].toDouble(),
+                      note2: sessionData['note2'].toDouble(),
+                      note3: sessionData['note3'].toDouble(),
+                        comments1: sessionData['comments1'],
+                        comments2: sessionData['comments2'],
+                        comments3: sessionData['comments3'],
+                        code: sessionData['code'],
+                      );
 
-                    if (userEmail == session.emailStudent) {
-                      return Card(
-                        child: Padding(
+                      if (userEmail == session.emailStudent) {
+                        return Card(
+                          child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Container(
                               margin: EdgeInsets.all(16.0),
@@ -154,50 +156,56 @@ class _EventScreenStudentState extends State<EventScreenStudent> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
-                                    height: 150,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(10.0),
-                                        topRight: Radius.circular(10.0),
+                                      height: 150,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(10.0),
+                                          topRight: Radius.circular(10.0),
+                                        ),
                                       ),
-                                    ),
-                                    child: Center(
-                                      child: StreamBuilder<List<SessionSoutenanceModel>>(
-                                        stream: sessionSoutenanceService.getSession(userCode),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.hasData) {
-                                            List<SessionSoutenanceModel> session = snapshot.data!;
-                                            if (session.isEmpty) {
-                                              return Center(
-                                                child: Text("Error."),
-                                              );
-                                            }
-                                            return ListView.builder(
-                                              itemCount: session.length,
-                                              itemBuilder: (context, index) {
-                                                return ListTile(
-                                                  title: Text(
-                                                    'AVIS DE SOUTENANCE ${session[index].type.toUpperCase()}',
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
+                                      child: Center(
+                                        child: StreamBuilder<
+                                            List<SessionSoutenanceModel>>(
+                                          stream: sessionSoutenanceService
+                                              .getSession(userCode),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasData) {
+                                              List<SessionSoutenanceModel>
+                                                  session = snapshot.data!;
+                                              if (session.isEmpty) {
+                                                return Center(
+                                                  child: Text("Error."),
                                                 );
-                                              },
-                                            );
-                                          } else if (snapshot.hasError) {
-                                            return Text('Error: ${snapshot.error}');
-                                          } else {
-                                            return Center(child: CircularProgressIndicator());
-                                          }
-                                        },
-                                      ),
-                                    )
-
-                                  ),
+                                              }
+                                              return ListView.builder(
+                                                itemCount: session.length,
+                                                itemBuilder: (context, index) {
+                                                  return ListTile(
+                                                    title: Text(
+                                                      'AVIS DE SOUTENANCE ${session[index].type.toUpperCase()}',
+                                                      style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white,
+                                                      ),
+                                                      textAlign: TextAlign.center,
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            } else if (snapshot.hasError) {
+                                              return Text(
+                                                  'Error: ${snapshot.error}');
+                                            } else {
+                                              return Center(
+                                                  child:
+                                                      CircularProgressIndicator());
+                                            }
+                                          },
+                                        ),
+                                      )),
                                   Padding(
                                     padding: const EdgeInsets.all(16.0),
                                     child: Column(
@@ -206,96 +214,161 @@ class _EventScreenStudentState extends State<EventScreenStudent> {
                                       children: [
                                         Text(
                                           'Parcours: ' + userParcours,
-                                        ),
-                                        SizedBox(height: 15,),
-                                        Text(
-                                          'Titre: ' + session.title.toString(),
-
-                                        ),
-                                        SizedBox(height: 5,),
-                                        Text(
-                                          'Par: ' + userName,
-                                        ),
-                                        SizedBox(height: 20),
-                                        Text(
-                                          'Membres de jury:',
-                                          style: TextStyle(
-                                            decoration: TextDecoration.underline,
+                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
+                                        SizedBox(height: 5,),
+                                        Text(
+                                        'Titre: ' + session.title.toString(),
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          // fontSize: 18, // Taille de police
+                                          // // Souligné// Couleur du soulignage
+                                          // decorationStyle: TextDecorationStyle.dotted, // Style du soulignage
+                                          // letterSpacing: 1.5, // Espacement entre les lettres
+                                          // // Style de police (italique)
+                                          // shadows: [
+                                          //   Shadow(
+                                          //     color: Colors.grey,
+                                          //     offset: Offset(2, 2),
+                                          //     blurRadius: 3,
+                                          //   ),
+                                          // ], // Ombre du texte
+                                        ),
+                                      ),
+
+                                        SizedBox(height: 5,),
+                                        Text(
+                                          'Par: ' + userName,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Center(
+                                          child: Text(
+                                            'Membres de jury:',
+                                            style: TextStyle(
+                                            decoration: TextDecoration.underline,
+                                              fontWeight: FontWeight.bold,
+                                               fontSize: 16, 
+                                                fontStyle: FontStyle.italic,
+                                            ),
+                                             textAlign: TextAlign.center,
+                                          ),
+                                        ),
                                         SizedBox(height: 8),
-
                                         StreamBuilder<List<UserModel>>(
-                                          stream: juryService.getJurysRole(userCode, 'président'), // Remplacez 'Président' par le rôle souhaité
+                                          stream: juryService.getJurysRole(
+                                              userCode,
+                                              'président'), // Remplacez 'Président' par le rôle souhaité
                                           builder: (context, snapshot) {
-                                            if (snapshot.connectionState == ConnectionState.waiting) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
                                               return CircularProgressIndicator();
                                             }
 
                                             if (snapshot.hasError) {
-                                              return Text('Erreur de chargement des données du jury.');
+                                              return Text(
+                                                  'Erreur de chargement des données du jury.');
                                             }
 
-                                            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                                              List<UserModel> presidents = snapshot.data!;
+                                            if (snapshot.hasData &&
+                                                snapshot.data!.isNotEmpty) {
+                                              List<UserModel> presidents =
+                                                  snapshot.data!;
                                               String presidentsText = presidents
-                                                  .map((jury) => '${jury.name}, ${jury.parcours}')
+                                                  .map((jury) =>
+                                                      '${jury.name}, ${jury.parcours}')
                                                   .join(', ');
 
-                                              return Text('Président du jury: $presidentsText');
+                                              return Text(
+                                                  'Président du jury: $presidentsText',  style: TextStyle(
+                                             
+                                              fontWeight: FontWeight.bold,
+                                               
+                                               
+                                            ),);
                                             } else {
-                                              return Text('Aucun Président du jury trouvé.');
+                                              return Text(
+                                                  'Aucun Président du jury trouvé.');
                                             }
                                           },
                                         ),
-
                                         SizedBox(height: 5),
-
                                         StreamBuilder<List<UserModel>>(
-                                          stream: juryService.getJurysRole(userCode, 'examinateur'),// Remplacez 'Examinateur' par le rôle du membre du jury que vous souhaitez afficher
+                                          stream: juryService.getJurysRole(
+                                              userCode,
+                                              'examinateur'), // Remplacez 'Examinateur' par le rôle du membre du jury que vous souhaitez afficher
                                           builder: (context, snapshot) {
-                                            if (snapshot.connectionState == ConnectionState.waiting) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
                                               return CircularProgressIndicator();
                                             }
 
                                             if (snapshot.hasError) {
-                                              return Text('Erreur de chargement des données du jury.');
+                                              return Text(
+                                                  'Erreur de chargement des données du jury.');
                                             }
 
-                                            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                                              List<UserModel> examinateurs = snapshot.data!;
+                                            if (snapshot.hasData &&
+                                                snapshot.data!.isNotEmpty) {
+                                              List<UserModel> examinateurs =
+                                                  snapshot.data!;
                                               String examinateursText = examinateurs
-                                                  .map((jury) => '${jury.name}, ${jury.parcours}')
+                                                  .map((jury) =>
+                                                      '${jury.name}, ${jury.parcours}')
                                                   .join(', ');
 
-                                              return Text('Examinateurs: $examinateursText');
+                                              return Text(
+                                                  'Examinateurs: $examinateursText',  style: TextStyle(
+                                             
+                                              fontWeight: FontWeight.bold,
+                                               
+                                               
+                                            ),);
                                             } else {
-                                              return Text('Aucun Examinateur trouvé.');
+                                              return Text(
+                                                  'Aucun Examinateur trouvé.');
                                             }
                                           },
                                         ),
                                         SizedBox(height: 5),
                                         StreamBuilder<List<UserModel>>(
-                                          stream: juryService.getJurysRole(userCode, 'rapporteur'),// Remplacez 'Rapporteur' par le rôle du membre du jury que vous souhaitez afficher
+                                          stream: juryService.getJurysRole(
+                                              userCode,
+                                              'rapporteur'), // Remplacez 'Rapporteur' par le rôle du membre du jury que vous souhaitez afficher
                                           builder: (context, snapshot) {
-                                            if (snapshot.connectionState == ConnectionState.waiting) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
                                               return CircularProgressIndicator();
                                             }
 
                                             if (snapshot.hasError) {
-                                              return Text('Erreur de chargement des données du jury.');
+                                              return Text(
+                                                  'Erreur de chargement des données du jury.');
                                             }
 
-                                            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                                              List<UserModel> rapporteurs = snapshot.data!;
+                                            if (snapshot.hasData &&
+                                                snapshot.data!.isNotEmpty) {
+                                              List<UserModel> rapporteurs =
+                                                  snapshot.data!;
                                               String rapporteursText = rapporteurs
-                                                  .map((jury) => '${jury.name}, ${jury.parcours}')
+                                                  .map((jury) =>
+                                                      '${jury.name}, ${jury.parcours}')
                                                   .join(', ');
 
-                                              return Text('Rapporteurs: $rapporteursText');
+                                              return Text(
+                                                  'Rapporteurs: $rapporteursText',  style: TextStyle(
+                                             
+                                              fontWeight: FontWeight.bold,
+                                               
+                                               
+                                            ),);
                                             } else {
-                                              return Text('Aucun Rapporteur trouvé.');
+                                              return Text(
+                                                  'Aucun Rapporteur trouvé.');
                                             }
                                           },
                                         ),
@@ -303,7 +376,12 @@ class _EventScreenStudentState extends State<EventScreenStudent> {
                                         Text(
                                           'Date: ' +
                                               DateFormat('dd-MM-yyyy')
-                                                  .format(session.date),
+                                                  .format(session.date), style: TextStyle(
+                                             
+                                              fontWeight: FontWeight.bold,
+                                               
+                                               
+                                            ),
                                         ),
                                         SizedBox(height: 8),
                                         Text(
@@ -313,18 +391,33 @@ class _EventScreenStudentState extends State<EventScreenStudent> {
                                                   .toLocal()
                                                   .toString()
                                                   .split(' ')[1]
-                                                  .substring(0, 5),
-
-                                        ),
+                                                  .substring(0, 5), style: TextStyle(
+                                             
+                                              fontWeight: FontWeight.bold,
+                                               
+                                               
+                                            ),
+                                        ), 
                                         SizedBox(height: 5),
                                         Text(
                                           'Lieu: ' +
-                                              session.location.toString(),
+                                              session.location.toString(),  style: TextStyle(
+                                             
+                                              fontWeight: FontWeight.bold,
+                                               
+                                               
+                                            ),
                                         ),
                                         SizedBox(height: 5),
                                         Text(
                                           'Durée: ' +
-                                              session.duration.toString() + ' heures',
+                                              session.duration.toString() +
+                                              ' heures',  style: TextStyle(
+                                             
+                                              fontWeight: FontWeight.bold,
+                                               
+                                               
+                                            ),
                                         ),
                                         SizedBox(height: 8),
                                       ],
@@ -332,36 +425,37 @@ class _EventScreenStudentState extends State<EventScreenStudent> {
                                   ),
                                 ],
                               ),
-                            ),),
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  )
+                : ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      final sessionData = snapshot.data!.docs[index];
+                      final session = SessionModel(
+                        id: sessionData.id,
+                        title: sessionData['title'],
+                        date: (sessionData['date'] as Timestamp).toDate(),
+                        time: sessionData['time'],
+                        duration: sessionData['duration'].toDouble(),
+                        location: sessionData['location'],
+                        emailStudent: sessionData['emailStudent'],
+                       notes: sessionData['notes'].toDouble(),
+                        note1: sessionData['note1'].toDouble(),
+                        note2: sessionData['note2'].toDouble(),
+                        note3: sessionData['note3'].toDouble(),
+                        comments1: sessionData['comments1'],
+                        comments2: sessionData['comments2'],
+                        comments3: sessionData['comments3'],
+                        code: sessionData['code'],
                       );
-                    }
-                  },
-                )
-              : ListView.builder(
-                  itemCount: snapshot.data!.docs.length,
-                  itemBuilder: (context, index) {
-                    final sessionData = snapshot.data!.docs[index];
-                    final session = SessionModel(
-                      id: sessionData.id,
-                      title: sessionData['title'],
-                      date: (sessionData['date'] as Timestamp).toDate(),
-                      time: sessionData['time'],
-                      duration: sessionData['duration'],
-                      location: sessionData['location'],
-                      emailStudent: sessionData['emailStudent'],
-                      notes: sessionData['notes'],
-                      note1: sessionData['note1'],
-                      note2: sessionData['note2'],
-                      note3: sessionData['note3'],
-                      comments1: sessionData['comments1'],
-                      comments2: sessionData['comments2'],
-                      comments3: sessionData['comments3'],
-                      code: sessionData['code'],
-                    );
 
-                    if (session.title?.isEmpty ?? true) {
-                      return Card(
-                        child: Padding(
+                      if (session.title?.isEmpty ?? true) {
+                        return Card(
+                          child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Container(
                               margin: EdgeInsets.all(16.0),
@@ -547,22 +641,31 @@ class _EventScreenStudentState extends State<EventScreenStudent> {
                                   ),
                                 ],
                               ),
-                            )),
-                      );
-                    }
-                  },
-                );
-        },
-      ),
-      floatingActionButton: Tooltip(
-        message: 'Voir mes notes',
-        child: FloatingActionButton(
-          onPressed: () {
-            // Action à exécuter lorsque le bouton est appuyé
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  );
           },
-          child: Icon(Icons.bar_chart),
         ),
-      ),
-    );
+        floatingActionButton: Tooltip(
+          message: 'Voir mes notes',
+          child: FloatingActionButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => NoteStudent(userFuture: _currentUserFuture), // Index 2 correspond à NoteStudent dans _widgetOptions
+                ),
+              );
+            },
+            child: Icon(Icons.bar_chart),
+          ),
+        ),
+      );
+    } else {
+      // Affichez une indication de chargement ou un message d'attente si userCode n'est pas encore initialisé.
+      return Loader(); // Remplacez Loader() par le widget que vous souhaitez afficher en attendant l'initialisation de userCode.
+    }
   }
 }

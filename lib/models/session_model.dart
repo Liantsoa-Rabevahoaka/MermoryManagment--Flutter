@@ -12,7 +12,7 @@ class SessionModel {
   double note1;
   double note2;
   double note3;
-  String code;
+  String? code;
   String comments1;
   String comments2;
   String comments3;
@@ -42,13 +42,13 @@ class SessionModel {
       title: data['title'] ?? '',
       date: data['date'].toDate(),
       time: data['time'] ?? '',
-      duration: data['duration'] ?? 0,
+      duration: (data['duration'] ?? 0.0).toDouble(), // Utilise 0.0 comme valeur par défaut pour les doubles
       location: data['location'] ?? '',
       emailStudent: data['emailStudent'] ?? '',
-      notes: data['notes'] ?? 0,
-      note1: data['note1'] ?? 0,
-      note2: data['note2'] ?? 0,
-      note3: data['note3'] ?? 0,
+      notes: (data['notes'] ?? 0.0).toDouble(), // Utilise 0.0 comme valeur par défaut pour les doubles
+      note1: (data['note1'] ?? 0.0).toDouble(), // Utilise 0.0 comme valeur par défaut pour les doubles
+      note2: (data['note2'] ?? 0.0).toDouble(), // Utilise 0.0 comme valeur par défaut pour les doubles
+      note3: (data['note3'] ?? 0.0).toDouble(), // Utilise 0.0 comme valeur par défaut pour les doubles
       comments1: data['comments1'] ?? '',
       comments2: data['comments2'] ?? '',
       comments3: data['comments3'] ?? '',
@@ -64,6 +64,9 @@ class SessionModel {
       'location': location,
       'emailStudent': emailStudent,
       'notes': notes,
+      'note1': note1,
+      'note2': note2,
+      'note3': note3,
       'comments1': comments1,
       'comments2': comments2,
       'comments3': comments3,
@@ -81,6 +84,9 @@ class SessionModel {
       'location': location,
       'emailStudent': emailStudent,
       'notes': notes,
+      'note1': note1,
+      'note2': note2,
+      'note3': note3,
       'comments1': comments1,
       'comments2': comments2,
       'comments3': comments3,

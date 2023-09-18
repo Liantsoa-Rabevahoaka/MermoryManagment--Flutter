@@ -152,7 +152,7 @@ class EventScreenTeacher extends StatefulWidget {
 
 class _EventScreenTeacherState extends State<EventScreenTeacher> {
   late CollectionReference sessionsCollection;
-  late String userCode;
+  late String? userCode = null;
   late String userRole;
   late double notes;
   late String comments1;
@@ -223,7 +223,7 @@ class _EventScreenTeacherState extends State<EventScreenTeacher> {
                 title: sessionData['title'],
                 date: (sessionData['date'] as Timestamp).toDate(),
                 time: sessionData['time'],
-                duration: sessionData['duration'],
+                 duration: sessionData['duration'].toDouble(),
                 location: sessionData['location'],
                 emailStudent: sessionData['emailStudent'],
                 notes: notes = double.tryParse(_noteController.text) ?? 0.0,
@@ -238,637 +238,647 @@ class _EventScreenTeacherState extends State<EventScreenTeacher> {
 
               if (userRole == "président") {
                 final DateTime today = DateTime.now();
-                if (session.comments1?.isEmpty ??
-                    true && session.emailStudent.isNotEmpty) {
-                  if (session.date.year == today.year &&
-                      session.date.month == today.month &&
-                      session.date.day == today.day) {
-                    return Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Container(
-                          margin: EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            color: bgColor,
-                            borderRadius: BorderRadius.circular(10.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 3,
-                                blurRadius: 7,
-                                offset: Offset(0, 3),
+                if ((session.title?.isNotEmpty ?? true) &&
+                    (session.comments1?.isEmpty ?? true) &&
+                    (session.date.year == today.year &&
+                        session.date.month == today.month &&
+                        session.date.day == today.day)) {
+                  return Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Container(
+                        margin: EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(10.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 3,
+                              blurRadius: 7,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 150,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(10.0),
+                                  topRight: Radius.circular(10.0),
+                                ),
                               ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                height: 150,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(10.0),
-                                    topRight: Radius.circular(10.0),
+                              child: Center(
+                                child: Text(
+                                  'Titre : ' + session.title.toString(),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.white,
                                   ),
                                 ),
-                                child: Center(
-                                  child: Text(
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
                                     'Date: ' +
                                         DateFormat('dd-MM-yyyy')
                                             .format(session.date),
                                     style: TextStyle(
-                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),
                                   ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Heure: ' +
-                                          DateTime.parse(session.time)
-                                              .toLocal()
-                                              .toLocal()
-                                              .toString()
-                                              .split(' ')[1]
-                                              .substring(0, 5),
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Heure: ' +
+                                        DateTime.parse(session.time)
+                                            .toLocal()
+                                            .toLocal()
+                                            .toString()
+                                            .split(' ')[1]
+                                            .substring(0, 5),
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
                                     ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Durée: ' + session.duration.toString(),
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.white,
-                                      ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Durée: ' + session.duration.toString(),
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.white,
                                     ),
-                                    SizedBox(height: 8),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: Text('Notation'),
-                                              content: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  TextField(
-                                                    controller:
-                                                        TextEditingController(
-                                                      text: DateFormat(
-                                                              'dd-MM-yyyy')
-                                                          .format(session.date),
-                                                    ),
-                                                    decoration: InputDecoration(
-                                                      labelText: 'Date',
-                                                    ),
-                                                    readOnly: true,
+                                  ),
+                                  SizedBox(height: 8),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text('Notation'),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                TextField(
+                                                  controller:
+                                                      TextEditingController(
+                                                    text: DateFormat(
+                                                            'dd-MM-yyyy')
+                                                        .format(session.date),
                                                   ),
-                                                  SizedBox(height: 16),
-                                                  TextField(
-                                                    controller:
-                                                        TextEditingController(
-                                                      text: DateTime.parse(
-                                                              session.time)
-                                                          .toLocal()
-                                                          .toLocal()
-                                                          .toString()
-                                                          .split(' ')[1]
-                                                          .substring(0, 5),
-                                                    ),
-                                                    decoration: InputDecoration(
-                                                      labelText: 'Heure',
-                                                    ),
-                                                    readOnly: true,
+                                                  decoration: InputDecoration(
+                                                    labelText: 'Date',
                                                   ),
-                                                  TextField(
-                                                    controller:
-                                                        _note1Controller,
-                                                    decoration: InputDecoration(
-                                                      hintText: 'Note',
-                                                      labelText:
-                                                          'Note de la soutenance',
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 16),
-                                                  TextField(
-                                                    controller:
-                                                        _comments1Controller,
-                                                    decoration: InputDecoration(
-                                                      hintText:
-                                                          'Votre commentaire',
-                                                      labelText:
-                                                          'Commentaire du Président',
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              actions: [
-                                                ElevatedButton(
-                                                  onPressed: () async {
-                                                    notes = double.tryParse(
-                                                            _note1Controller
-                                                                .text
-                                                                .trim()) ??
-                                                        0.0;
-                                                    comments1 =
-                                                        _comments1Controller
-                                                            .text
-                                                            .trim();
-
-                                                    await _sessionService
-                                                        .updateNotesPresident(
-                                                            sessionData.id,
-                                                            notes,
-                                                            comments1);
-
-                                                    Navigator.of(context).pop();
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (BuildContext
-                                                          context) {
-                                                        return AlertDialog(
-                                                          title: Text(
-                                                              'Notation réussie'),
-                                                          content: Text(
-                                                              'La soutenance a bien été notée.'),
-                                                          actions: [
-                                                            TextButton(
-                                                              onPressed: () {
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                              },
-                                                              child: Text('OK'),
-                                                            ),
-                                                          ],
-                                                        );
-                                                      },
-                                                    );
-                                                  },
-                                                  child: Text('OK'),
+                                                  readOnly: true,
                                                 ),
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: Text('Annuler'),
+                                                SizedBox(height: 16),
+                                                TextField(
+                                                  controller:
+                                                      TextEditingController(
+                                                    text: DateTime.parse(
+                                                            session.time)
+                                                        .toLocal()
+                                                        .toLocal()
+                                                        .toString()
+                                                        .split(' ')[1]
+                                                        .substring(0, 5),
+                                                  ),
+                                                  decoration: InputDecoration(
+                                                    labelText: 'Heure',
+                                                  ),
+                                                  readOnly: true,
+                                                ),
+                                                TextField(
+                                                  controller: _note1Controller,
+                                                  decoration: InputDecoration(
+                                                    hintText: 'Note',
+                                                    labelText:
+                                                        'Note de la soutenance',
+                                                  ),
+                                                ),
+                                                SizedBox(height: 16),
+                                                TextField(
+                                                  controller:
+                                                      _comments1Controller,
+                                                  decoration: InputDecoration(
+                                                    hintText:
+                                                        'Votre commentaire',
+                                                    labelText:
+                                                        'Commentaire du Président',
+                                                  ),
                                                 ),
                                               ],
-                                            );
-                                          },
-                                        );
-                                      },
-                                      child: Text('Noter'),
-                                    ),
-                                  ],
-                                ),
+                                            ),
+                                            actions: [
+                                              ElevatedButton(
+                                                onPressed: () async {
+                                                  notes = double.tryParse(
+                                                          _note1Controller.text
+                                                              .trim()) ??
+                                                      0.0;
+                                                  comments1 =
+                                                      _comments1Controller.text
+                                                          .trim();
+
+                                                  await _sessionService
+                                                      .updateNotesPresident(
+                                                          sessionData.id,
+                                                          notes,
+                                                          comments1);
+
+                                                  Navigator.of(context).pop();
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: Text(
+                                                            'Notation réussie'),
+                                                        content: Text(
+                                                            'La soutenance a bien été notée.'),
+                                                        actions: [
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                            child: Text('OK'),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                child: Text('OK'),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Text('Annuler'),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: Text('Noter'),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  }
+                    ),
+                  );
                 }
                 return Container(
                   child: Center(
                     child: Text('Aucune nouvelle soutenance à noter'),
                   ),
-                ); // Retourne un widget vide par défaut si les conditions ne sont pas remplies
+                );
+                // Retourne un widget vide par défaut si les conditions ne sont pas remplies
               } else if (userRole == "rapporteur") {
                 final DateTime today = DateTime.now();
-                if (session.comments2?.isEmpty ??
-                    true && session.emailStudent.isNotEmpty) {
-                  if (session.date.year == today.year &&
-                      session.date.month == today.month &&
-                      session.date.day == today.day) {
-                    return Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Container(
-                          margin: EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            color: bgColor,
-                            borderRadius: BorderRadius.circular(10.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 3,
-                                blurRadius: 7,
-                                offset: Offset(0, 3),
+                if ((session.title?.isNotEmpty ?? true) &&
+                    (session.comments2?.isEmpty ?? true) &&
+                    (session.date.year == today.year &&
+                        session.date.month == today.month &&
+                        session.date.day == today.day)) {
+                  return Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Container(
+                        margin: EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(10.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 3,
+                              blurRadius: 7,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 150,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(10.0),
+                                  topRight: Radius.circular(10.0),
+                                ),
                               ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                height: 150,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(10.0),
-                                    topRight: Radius.circular(10.0),
+                              child: Center(
+                                child: Text(
+                                  'Titre : ' + session.title.toString(),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.white,
                                   ),
                                 ),
-                                child: Center(
-                                  child: Text(
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
                                     'Date: ' +
                                         DateFormat('dd-MM-yyyy')
                                             .format(session.date),
                                     style: TextStyle(
-                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),
                                   ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Heure: ' +
-                                          DateTime.parse(session.time)
-                                              .toLocal()
-                                              .toLocal()
-                                              .toString()
-                                              .split(' ')[1]
-                                              .substring(0, 5),
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
+                                  Text(
+                                    'Heure: ' +
+                                        DateTime.parse(session.time)
+                                            .toLocal()
+                                            .toLocal()
+                                            .toString()
+                                            .split(' ')[1]
+                                            .substring(0, 5),
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
                                     ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Durée: ' + session.duration.toString(),
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.white,
-                                      ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Durée: ' + session.duration.toString(),
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.white,
                                     ),
-                                    SizedBox(height: 8),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: Text('Notation'),
-                                              content: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  TextField(
-                                                    controller:
-                                                        TextEditingController(
-                                                      text: DateFormat(
-                                                              'dd-MM-yyyy')
-                                                          .format(session.date),
-                                                    ),
-                                                    decoration: InputDecoration(
-                                                      labelText: 'Date',
-                                                    ),
-                                                    readOnly: true,
+                                  ),
+                                  SizedBox(height: 8),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text('Notation'),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                TextField(
+                                                  controller:
+                                                      TextEditingController(
+                                                    text: DateFormat(
+                                                            'dd-MM-yyyy')
+                                                        .format(session.date),
                                                   ),
-                                                  SizedBox(height: 16),
-                                                  TextField(
-                                                    controller:
-                                                        TextEditingController(
-                                                      text: DateTime.parse(
-                                                              session.time)
-                                                          .toLocal()
-                                                          .toLocal()
-                                                          .toString()
-                                                          .split(' ')[1]
-                                                          .substring(0, 5),
-                                                    ),
-                                                    decoration: InputDecoration(
-                                                      labelText: 'Heure',
-                                                    ),
-                                                    readOnly: true,
+                                                  decoration: InputDecoration(
+                                                    labelText: 'Date',
                                                   ),
-                                                  TextField(
-                                                    controller:
-                                                        _note2Controller,
-                                                    decoration: InputDecoration(
-                                                      hintText: 'Note',
-                                                      labelText:
-                                                          'Note de la soutenance',
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 16),
-                                                  TextField(
-                                                    controller:
-                                                        _comments2Controller,
-                                                    decoration: InputDecoration(
-                                                      hintText:
-                                                          'Votre commentaire',
-                                                      labelText:
-                                                          'Commentaire du Rapporteur',
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              actions: [
-                                                ElevatedButton(
-                                                  onPressed: () async {
-                                                    notes = double.tryParse(
-                                                            _note2Controller
-                                                                .text
-                                                                .trim()) ??
-                                                        0.0;
-                                                    comments2 =
-                                                        _comments2Controller
-                                                            .text
-                                                            .trim();
-
-                                                    await _sessionService
-                                                        .updateNotesRapporteur(
-                                                            sessionData.id,
-                                                            notes,
-                                                            comments2);
-
-                                                    Navigator.of(context).pop();
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (BuildContext
-                                                          context) {
-                                                        return AlertDialog(
-                                                          title: Text(
-                                                              'Notation réussie'),
-                                                          content: Text(
-                                                              'La soutenance a bien été notée.'),
-                                                          actions: [
-                                                            TextButton(
-                                                              onPressed: () {
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                              },
-                                                              child: Text('OK'),
-                                                            ),
-                                                          ],
-                                                        );
-                                                      },
-                                                    );
-                                                  },
-                                                  child: Text('OK'),
+                                                  readOnly: true,
                                                 ),
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: Text('Annuler'),
+                                                SizedBox(height: 16),
+                                                TextField(
+                                                  controller:
+                                                      TextEditingController(
+                                                    text: DateTime.parse(
+                                                            session.time)
+                                                        .toLocal()
+                                                        .toLocal()
+                                                        .toString()
+                                                        .split(' ')[1]
+                                                        .substring(0, 5),
+                                                  ),
+                                                  decoration: InputDecoration(
+                                                    labelText: 'Heure',
+                                                  ),
+                                                  readOnly: true,
+                                                ),
+                                                TextField(
+                                                  controller: _note2Controller,
+                                                  decoration: InputDecoration(
+                                                    hintText: 'Note',
+                                                    labelText:
+                                                        'Note de la soutenance',
+                                                  ),
+                                                ),
+                                                SizedBox(height: 16),
+                                                TextField(
+                                                  controller:
+                                                      _comments2Controller,
+                                                  decoration: InputDecoration(
+                                                    hintText:
+                                                        'Votre commentaire',
+                                                    labelText:
+                                                        'Commentaire du Rapporteur',
+                                                  ),
                                                 ),
                                               ],
-                                            );
-                                          },
-                                        );
-                                      },
-                                      child: Text('Noter'),
-                                    ),
-                                  ],
-                                ),
+                                            ),
+                                            actions: [
+                                              ElevatedButton(
+                                                onPressed: () async {
+                                                  notes = double.tryParse(
+                                                          _note2Controller.text
+                                                              .trim()) ??
+                                                      0.0;
+                                                  comments2 =
+                                                      _comments2Controller.text
+                                                          .trim();
+
+                                                  await _sessionService
+                                                      .updateNotesRapporteur(
+                                                          sessionData.id,
+                                                          notes,
+                                                          comments2);
+
+                                                  Navigator.of(context).pop();
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: Text(
+                                                            'Notation réussie'),
+                                                        content: Text(
+                                                            'La soutenance a bien été notée.'),
+                                                        actions: [
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                            child: Text('OK'),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                child: Text('OK'),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Text('Annuler'),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: Text('Noter'),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  }
+                    ),
+                  );
                 }
                 return Container(
                   child: Center(
                     child: Text('Aucune nouvelle soutenance à noter'),
                   ),
-                ); // Retourne un widget vide par défaut si les conditions ne sont pas remplies
+                );
+                // Retourne un widget vide par défaut si les conditions ne sont pas remplies
               } else if (userRole == "examinateur") {
                 final DateTime today = DateTime.now();
-                if (session.comments3?.isEmpty ??
-                    true && session.emailStudent.isNotEmpty) {
-                  if (session.date.year == today.year &&
-                      session.date.month == today.month &&
-                      session.date.day == today.day) {
-                    return Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Container(
-                          margin: EdgeInsets.all(16.0),
-                          decoration: BoxDecoration(
-                            color: bgColor,
-                            borderRadius: BorderRadius.circular(10.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 3,
-                                blurRadius: 7,
-                                offset: Offset(0, 3),
+                if ((session.title?.isNotEmpty ?? true) &&
+                    (session.comments3?.isEmpty ?? true) &&
+                    (session.date.year == today.year &&
+                        session.date.month == today.month &&
+                        session.date.day == today.day)) {
+                  return Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Container(
+                        margin: EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(10.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 3,
+                              blurRadius: 7,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 150,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(10.0),
+                                  topRight: Radius.circular(10.0),
+                                ),
                               ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                height: 150,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(10.0),
-                                    topRight: Radius.circular(10.0),
+                              child: Center(
+                                child: Text(
+                                  'Titre : ' + session.title.toString(),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.white,
                                   ),
                                 ),
-                                child: Center(
-                                  child: Text(
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
                                     'Date: ' +
                                         DateFormat('dd-MM-yyyy')
                                             .format(session.date),
                                     style: TextStyle(
-                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),
                                   ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Heure: ' +
-                                          DateTime.parse(session.time)
-                                              .toLocal()
-                                              .toLocal()
-                                              .toString()
-                                              .split(' ')[1]
-                                              .substring(0, 5),
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
+                                  Text(
+                                    'Heure: ' +
+                                        DateTime.parse(session.time)
+                                            .toLocal()
+                                            .toLocal()
+                                            .toString()
+                                            .split(' ')[1]
+                                            .substring(0, 5),
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
                                     ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Durée: ' + session.duration.toString(),
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.white,
-                                      ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Durée: ' + session.duration.toString(),
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.white,
                                     ),
-                                    SizedBox(height: 8),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: Text('Notation'),
-                                              content: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  TextField(
-                                                    controller:
-                                                        TextEditingController(
-                                                      text: DateFormat(
-                                                              'dd-MM-yyyy')
-                                                          .format(session.date),
-                                                    ),
-                                                    decoration: InputDecoration(
-                                                      labelText: 'Date',
-                                                    ),
-                                                    readOnly: true,
+                                  ),
+                                  SizedBox(height: 8),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text('Notation'),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                TextField(
+                                                  controller:
+                                                      TextEditingController(
+                                                    text: DateFormat(
+                                                            'dd-MM-yyyy')
+                                                        .format(session.date),
                                                   ),
-                                                  SizedBox(height: 16),
-                                                  TextField(
-                                                    controller:
-                                                        TextEditingController(
-                                                      text: DateTime.parse(
-                                                              session.time)
-                                                          .toLocal()
-                                                          .toLocal()
-                                                          .toString()
-                                                          .split(' ')[1]
-                                                          .substring(0, 5),
-                                                    ),
-                                                    decoration: InputDecoration(
-                                                      labelText: 'Heure',
-                                                    ),
-                                                    readOnly: true,
+                                                  decoration: InputDecoration(
+                                                    labelText: 'Date',
                                                   ),
-                                                  TextField(
-                                                    controller:
-                                                        _note3Controller,
-                                                    decoration: InputDecoration(
-                                                      hintText: 'Note',
-                                                      labelText:
-                                                          'Note de la soutenance',
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 16),
-                                                  TextField(
-                                                    controller:
-                                                        _comments3Controller,
-                                                    decoration: InputDecoration(
-                                                      hintText:
-                                                          'Votre commentaire',
-                                                      labelText:
-                                                          'Commentaire du Examinateur',
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              actions: [
-                                                ElevatedButton(
-                                                  onPressed: () async {
-                                                    notes = double.tryParse(
-                                                            _note3Controller
-                                                                .text
-                                                                .trim()) ??
-                                                        0.0;
-                                                    comments3 =
-                                                        _comments3Controller
-                                                            .text
-                                                            .trim();
-
-                                                    await _sessionService
-                                                        .updateNotesExaminateur(
-                                                            sessionData.id,
-                                                            notes,
-                                                            comments3);
-
-                                                    Navigator.of(context).pop();
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (BuildContext
-                                                          context) {
-                                                        return AlertDialog(
-                                                          title: Text(
-                                                              'Notation réussie'),
-                                                          content: Text(
-                                                              'La soutenance a bien été notée.'),
-                                                          actions: [
-                                                            TextButton(
-                                                              onPressed: () {
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                              },
-                                                              child: Text('OK'),
-                                                            ),
-                                                          ],
-                                                        );
-                                                      },
-                                                    );
-                                                  },
-                                                  child: Text('OK'),
+                                                  readOnly: true,
                                                 ),
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: Text('Annuler'),
+                                                SizedBox(height: 16),
+                                                TextField(
+                                                  controller:
+                                                      TextEditingController(
+                                                    text: DateTime.parse(
+                                                            session.time)
+                                                        .toLocal()
+                                                        .toLocal()
+                                                        .toString()
+                                                        .split(' ')[1]
+                                                        .substring(0, 5),
+                                                  ),
+                                                  decoration: InputDecoration(
+                                                    labelText: 'Heure',
+                                                  ),
+                                                  readOnly: true,
+                                                ),
+                                                TextField(
+                                                  controller: _note3Controller,
+                                                  decoration: InputDecoration(
+                                                    hintText: 'Note',
+                                                    labelText:
+                                                        'Note de la soutenance',
+                                                  ),
+                                                ),
+                                                SizedBox(height: 16),
+                                                TextField(
+                                                  controller:
+                                                      _comments3Controller,
+                                                  decoration: InputDecoration(
+                                                    hintText:
+                                                        'Votre commentaire',
+                                                    labelText:
+                                                        'Commentaire du Examinateur',
+                                                  ),
                                                 ),
                                               ],
-                                            );
-                                          },
-                                        );
-                                      },
-                                      child: Text('Noter'),
-                                    ),
-                                  ],
-                                ),
+                                            ),
+                                            actions: [
+                                              ElevatedButton(
+                                                onPressed: () async {
+                                                  notes = double.tryParse(
+                                                          _note3Controller.text
+                                                              .trim()) ??
+                                                      0.0;
+                                                  comments3 =
+                                                      _comments3Controller.text
+                                                          .trim();
+
+                                                  await _sessionService
+                                                      .updateNotesExaminateur(
+                                                          sessionData.id,
+                                                          notes,
+                                                          comments3);
+
+                                                  Navigator.of(context).pop();
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: Text(
+                                                            'Notation réussie'),
+                                                        content: Text(
+                                                            'La soutenance a bien été notée.'),
+                                                        actions: [
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                            child: Text('OK'),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                child: Text('OK'),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Text('Annuler'),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: Text('Noter'),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  }
+                    ),
+                  );
                 }
                 return Container(
                   child: Center(
                     child: Text('Aucune nouvelle soutenance à noter'),
                   ),
-                ); // Retourne un widget vide par défaut si les conditions ne sont pas remplies
+                );
+                // Retourne un widget vide par défaut si les conditions ne sont pas remplies
               }
             },
           );

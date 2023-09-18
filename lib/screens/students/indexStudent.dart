@@ -61,23 +61,23 @@ class IndexStudent extends StatelessWidget {
                         children: [
                           Text(
                             'Nom de l\'étudiant : ${currentUser.name}',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),  textAlign: TextAlign.center,
                           ),
                           Text(
                             'E-mail de l\'étudiant : ${currentUser.email}',
-                            style: TextStyle(fontSize: 20, color: Colors.white),
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
                           Text(
                             'Parcours de l\'étudiant : ${currentUser.parcours}',
-                            style: TextStyle(fontSize: 20, color: Colors.white),
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
                           Text(
                             'Session : $sessionValue',
-                            style: TextStyle(fontSize: 20, color: Colors.white),
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
                           Text(
                             'Année : $sessionDate',
-                            style: TextStyle(fontSize: 20, color: Colors.white),
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
                           // ... Ajoutez plus d'éléments d'interface utilisateur ici si nécessaire
                         ],

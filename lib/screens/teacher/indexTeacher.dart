@@ -134,7 +134,7 @@ class IndexTeacher extends StatelessWidget {
                       children: [
                         Text('Nom : ${currentUser.name}',  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),),
                         Text('E-mail : ${currentUser.email}',  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),),
-                        Text('Parcours : ${currentUser.parcours}',  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),),
+                        Text('Fonction : ${currentUser.parcours}',  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),),
                         Text('Role : ${currentUser.role}',  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),),
                         Text('Valeur de la session : $sessionValue',  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),),
                         Text('Annee : $sessionDate',  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),),

@@ -2,10 +2,10 @@ import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../../models/sessionSoutenance.dart';
-import '../../../models/user_model.dart';
-import '../../../providers/user_provider.dart';
+import 'package:gestion_de_soutenance/models/user_model.dart';
+import 'package:gestion_de_soutenance/providers/user_provider.dart';
 import 'package:provider/provider.dart';
+import '../../../models/sessionSoutenance.dart';
 import '../../../models/session_model.dart';
 
 import 'package:table_calendar/table_calendar.dart';
@@ -16,10 +16,9 @@ import 'event_item.dart';
 import '../event/add_event.dart';
 
 class EventScreen extends StatefulWidget {
-  final SessionSoutenanceModel session;
-
-  EventScreen({required this.session});
-
+   final SessionSoutenanceModel session;
+     EventScreen({required this.session});
+ 
   @override
   State<EventScreen> createState() => _EventScreenState();
 
@@ -74,9 +73,6 @@ class _EventScreenState extends State<EventScreen> {
       if (_events[day] == null) {
         _events[day] = [];
       }
-
-      event.code = widget.session.code;
-
       _events[day]!.add(event);
     }
     setState(() {});
@@ -102,7 +98,7 @@ class _EventScreenState extends State<EventScreen> {
           lastDate: _lastDay,
           selectedDate: _selectedDay,
           updateSelectedDate: updateSelectedDate,
-          session: widget.session,
+            session:widget.session,
         ),
       ),
     );
@@ -117,22 +113,22 @@ class _EventScreenState extends State<EventScreen> {
       final delete = await showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text("Supprimer?"),
-          content: const Text("Êtes-vous sûr de la suppression?"),
+          title: const Text("Delete Event?"),
+          content: const Text("Are you sure you want to delete?"),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.red,
-              ),
-              child: const Text("Oui"),
-            ),
             TextButton(
               onPressed: () => Navigator.pop(context, false),
               style: TextButton.styleFrom(
                 foregroundColor: Colors.black,
               ),
-              child: const Text("Annuler"),
+              child: const Text("No"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.red,
+              ),
+              child: const Text("Yes"),
             ),
           ],
         ),
@@ -140,31 +136,11 @@ class _EventScreenState extends State<EventScreen> {
       if (delete ?? false) {
         await SessionService().deleteSession(event.id);
         _loadFirestoreEvents();
-
-        // Afficher une boîte de dialogue de succès
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Suppression réussie'),
-              content: Text('La session a été supprimée avec succès.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Fermer la boîte de dialogue de succès
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
       }
     } catch (e) {
       print('onDelete Error: $e');
     }
   }
-
 
   Future<void> _redirectToSessionDetails(SessionModel session) async {
     final res = await Navigator.push<bool>(

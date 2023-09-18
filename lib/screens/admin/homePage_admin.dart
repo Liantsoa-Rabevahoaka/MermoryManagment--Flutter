@@ -35,32 +35,64 @@ class Index extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Afficher les informations de session
-                    Column(
+                  Column(
+  children: [
+    Text(
+      'Année: ${session.annee}',
+      style: TextStyle(
+        color: Colors.white, // Couleur du texte en blanc
+        fontSize: 18, // Taille de la police
+        fontWeight: FontWeight.bold, // Gras
+      ),
+    ),
+    Text(
+      'Type: ${session.type}',
+      style: TextStyle(
+        color: Colors.white, // Couleur du texte en blanc
+        fontSize: 18, // Taille de la police
+        fontWeight: FontWeight.bold, // Gras
+      ),
+    ),
+    Text(
+      'Code d\'entrée: ${session.code}',
+      style: TextStyle(
+        color: Colors.white, // Couleur du texte en blanc
+        fontSize: 18, // Taille de la police
+        fontWeight: FontWeight.bold, // Gras
+      ),
+    ),
+    FutureBuilder<int>(
+      future: sessionService.getNumberOfStudentsInSession('${session.code}'),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text(
+            'Erreur: ${snapshot.error}',
+            style: TextStyle(
+              color: Colors.white, // Couleur du texte en blanc
+              fontSize: 18, // Taille de la police
+              fontWeight: FontWeight.bold, // Gras
+            ),
+          );
+        } else {
+          final int numberOfStudents = snapshot.data ?? 0;
+          return Center(
+            child: Text(
+              'Nombre d\'étudiants inscrits : $numberOfStudents',
+              style: TextStyle(
+                color: Colors.white, // Couleur du texte en blanc
+                fontSize: 18, // Taille de la police
+                fontWeight: FontWeight.bold, // Gras
+              ),
+            ),
+          );
+        }
+      },
+    ),
+  ],
+),
 
-                      children: [
-                        Text('Année: ${session.annee}',
-                        ),
-                        Text('Type: ${session.type}',
-                        ),
-                        Text('Code d\' entrée: ${session.code}',
-                        ),
-                        FutureBuilder<int>(
-                          future: sessionService.getNumberOfStudentsInSession('${session.code}'), // Remplacez 'sessionCode' par le code de la session que vous souhaitez afficher
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return CircularProgressIndicator();
-                            } else if (snapshot.hasError) {
-                              return Text('Erreur: ${snapshot.error}');
-                            } else {
-                              final int numberOfStudents = snapshot.data ?? 0;
-                              return Center(
-                                child: Text('Nombre d\'étudiants inscrits : $numberOfStudents'),
-                              );
-                            }
-                          },
-                        ),
-                      ],
-                    ),
                     // Espacement entre les informations de session et les boutons
                     SizedBox(height: 20),
                     // Boutons d'accès aux listes

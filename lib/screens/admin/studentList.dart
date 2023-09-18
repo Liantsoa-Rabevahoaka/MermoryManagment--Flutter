@@ -57,13 +57,33 @@ class _CrudStudentListState extends State<StudentList> {
                     itemCount: students.length,
                     itemBuilder: (context, index) {
                       return Card(
+                        elevation: 4, // Ajout d'une ombre pour la carte
+                        color: Color.fromARGB(
+                            255, 118, 189, 224), // Couleur de la carte
+                        margin: EdgeInsets.all(16), // Espacement
                         child: ListTile(
-                          title: Text(students![index].name),
+                          // leading: Image.asset("assets/images/logo.png"),
+                          title: Text(
+                            students[index].name,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          subtitle: Text(
+                            students[index].email,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
+                          ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
                                 icon: Icon(Icons.remove_red_eye),
+                                color: Colors.white,
                                 onPressed: () {
                                   // View student details
                                   Navigator.push(
@@ -157,9 +177,8 @@ class _CrudStudentListState extends State<StudentList> {
                           String email = emailController.text.trim();
                           String password = passText.value;
 
-                          // Utilisez userData.docs.isNotEmpty au lieu de sessionSnapshot.exists
                           UserModel student = UserModel(
-                            id: generateUniqueId(), // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
+                            id: generateUniqueId(),
                             name: nom,
                             email: email,
                             age: age,
@@ -232,7 +251,7 @@ class _CrudStudentListState extends State<StudentList> {
                         elevation: 4, // Ajout d'une ombre pour la carte
                         color: Color.fromARGB(
                             255, 118, 189, 224), // Couleur de la carte
-
+                        margin: EdgeInsets.all(16), // Espacement
                         child: ListTile(
                           // leading: Image.asset("assets/images/logo.png"),
                           title: Text(students[index].name),
@@ -409,10 +428,8 @@ void _showEditDialog(BuildContext context, UserModel student) {
               String newEmail = emailController.text.trim();
               int newAge = int.tryParse(ageController.text) ?? 0;
 
-              // ignore: prefer_typing_uninitialized_variables
-
               UserModel student = UserModel(
-                id: id, // Remplacez par l'ID de l'étudiant (vous pouvez générer un ID unique ici ou laisser vide si Firebase se chargera de le générer)
+                id: id,
                 name: newName,
                 email: newEmail,
                 age: newAge,

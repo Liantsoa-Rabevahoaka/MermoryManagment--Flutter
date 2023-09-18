@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../components/loader/loader.dart';
 import '../../models/session_model.dart';
 import '../../models/user_model.dart';
+import '../../services/auth_service.dart';
 import '../../services/session_service.dart';
 import 'package:intl/intl.dart';
 
@@ -20,9 +21,12 @@ class NoteStudent extends StatefulWidget {
 
 class _NoteStudentState extends State<NoteStudent> {
   late CollectionReference sessionsCollection;
-  late String userCode;
-  late String userEmail;
+  late String? userCode = null;
+  late String? userEmail = null;
   final user = FirebaseAuth.instance.currentUser;
+  late Future<UserModel?> _currentUserFuture;
+  List<Widget> _widgetOptions = [];
+  final AuthService _authService = AuthService();
 
   Color _getRandomColor() {
     final List<Color> colors = [
@@ -38,6 +42,7 @@ class _NoteStudentState extends State<NoteStudent> {
   @override
   void initState() {
     super.initState();
+    _currentUserFuture = _authService.getCurrentUser();
     sessionsCollection = FirebaseFirestore.instance.collection('Sessions');
 
     widget.userFuture.then((user) {
@@ -75,13 +80,13 @@ class _NoteStudentState extends State<NoteStudent> {
               title: sessionData['title'],
               date: (sessionData['date'] as Timestamp).toDate(),
               time: sessionData['time'],
-              duration: sessionData['duration'],
+              duration: sessionData['duration'].toDouble(),
               location: sessionData['location'],
               emailStudent: sessionData['emailStudent'],
-              notes: sessionData['notes'],
-              note1: sessionData['note1'],
-              note2: sessionData['note2'],
-              note3: sessionData['note3'],
+             notes: sessionData['notes'].toDouble(),
+              note1: sessionData['note1'].toDouble(),
+              note2: sessionData['note2'].toDouble(),
+              note3: sessionData['note3'].toDouble(),
               comments1: sessionData['comments1'],
               comments2: sessionData['comments2'],
               comments3: sessionData['comments3'],
@@ -102,13 +107,13 @@ class _NoteStudentState extends State<NoteStudent> {
                       title: sessionData['title'],
                       date: (sessionData['date'] as Timestamp).toDate(),
                       time: sessionData['time'],
-                      duration: sessionData['duration'],
+                      duration: sessionData['duration'].toDouble(),
                       location: sessionData['location'],
                       emailStudent: sessionData['emailStudent'],
-                      notes: sessionData['notes'],
-                      note1: sessionData['note1'],
-                      note2: sessionData['note2'],
-                      note3: sessionData['note3'],
+                      notes: sessionData['notes'].toDouble(),
+              note1: sessionData['note1'].toDouble(),
+              note2: sessionData['note2'].toDouble(),
+              note3: sessionData['note3'].toDouble(),
                       comments1: sessionData['comments1'],
                       comments2: sessionData['comments2'],
                       comments3: sessionData['comments3'],
@@ -271,7 +276,11 @@ class _NoteStudentState extends State<NoteStudent> {
                               ),
                             )),
                       );
-                    } else {
+                    } else if(session.notes == null &&
+                        session.comments1.isEmpty &&
+                        session.comments2.isEmpty &&
+                        session.comments3.isEmpty &&
+                        userEmail == session.emailStudent){
                       return Card(
                         child: Center(
                           child: Text(
@@ -285,9 +294,11 @@ class _NoteStudentState extends State<NoteStudent> {
               : Center(
                   child: GestureDetector(
                     onTap: () {
-                      // Action à effectuer lorsque le lien est cliqué
-                      // Par exemple, vous pouvez naviguer vers une autre page.
-                      // Navigator.push(context, MaterialPageRoute(builder: (context) => VotrePage()));
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => _widgetOptions[1], // Index 2 correspond à NoteStudent dans _widgetOptions
+                        ),
+                      );
                     },
                     child: Text.rich(
                       TextSpan(

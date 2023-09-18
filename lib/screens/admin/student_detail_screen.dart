@@ -17,7 +17,7 @@ class StudentDetailScreen extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('images/etudiant4.jpg'), // Chemin de votre image d'arrière-plan
+                image: AssetImage('images/session2.jpg'), // Chemin de votre image d'arrière-plan
                 fit: BoxFit.cover,
               ),
             ),
@@ -36,32 +36,32 @@ class StudentDetailScreen extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'welcome',
-                          style: TextStyle(
-                            fontSize: 22,
-                            color: const Color.fromRGBO(255, 255, 255, 1),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          student.name,
-                          style: TextStyle(
-                            fontSize: 22,
-                            color: const Color.fromRGBO(255, 255, 255, 1),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 5,),
-                        Text(
-                          student.role,
-                          style: TextStyle(
-                            fontSize: 22,
-                            color: const Color.fromRGBO(255, 255, 255, 1),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        // Text(
+                        //   'welcome',
+                        //   style: TextStyle(
+                        //     fontSize: 22,
+                        //     color: const Color.fromRGBO(255, 255, 255, 1),
+                        //     fontWeight: FontWeight.bold,
+                        //   ),
+                        // ),
+                        // SizedBox(height: 5),
+                        // Text(
+                        //   student.name,
+                        //   style: TextStyle(
+                        //     fontSize: 22,
+                        //     color: const Color.fromRGBO(255, 255, 255, 1),
+                        //     fontWeight: FontWeight.bold,
+                        //   ),
+                        // ),
+                        // SizedBox(height: 5,),
+                        // Text(
+                        //   student.role,
+                        //   style: TextStyle(
+                        //     fontSize: 22,
+                        //     color: const Color.fromRGBO(255, 255, 255, 1),
+                        //     fontWeight: FontWeight.bold,
+                        //   ),
+                        // ),
                       ],
                     ),
                     /**CircleAvatar(
@@ -79,20 +79,20 @@ class StudentDetailScreen extends StatelessWidget {
                     children: [
                       Text('Nom: ${student.name}',   style: TextStyle(
                     fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 28, 40, 150),
+                           color: const Color.fromRGBO(255, 255, 255, 1),
+                           fontWeight: FontWeight.bold,
                   ), ),// Couleur rouge),
-                      SizedBox(height: 8),
+                      SizedBox(height: 12),
                       Text('Email: ${student.email}',  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color:  Color.fromARGB(255, 28, 40, 150),
+                     fontSize: 28,
+                           color: const Color.fromRGBO(255, 255, 255, 1),
+                           fontWeight: FontWeight.bold,
                   ),),
-                      SizedBox(height: 8),
-                      Text('Age: ${student.age}',  style: TextStyle(
+                      SizedBox(height: 12),
+                      Text('Age: ${student.age}' 'ans',  style: TextStyle(
                     fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 28, 40, 150),
+                           color: const Color.fromRGBO(255, 255, 255, 1),
+                           fontWeight: FontWeight.bold,
                   ),),
                       // Ajoutez d'autres détails que vous souhaitez afficher
                     ],

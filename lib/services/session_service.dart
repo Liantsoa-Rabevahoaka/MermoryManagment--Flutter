@@ -78,7 +78,12 @@ class SessionService {
 
   Future<void> addSession(SessionModel session) async {
     try {
-      await _sessionCollection.doc().set(session.ToFirestore());
+      await _sessionCollection.doc().set({
+        ...session.ToFirestore(),
+        'note1': session.note1 ?? 0.0,
+        'note2': session.note2 ?? 0.0,
+        'note3': session.note3 ?? 0.0,
+    });
     } catch (e) {
       print(' Error adding session: $e');
     }
@@ -94,7 +99,7 @@ class SessionService {
           title: doc['title'] ?? '',
           date: doc['date'].toDate() ?? '',
           time: doc['time'] ?? '',
-          duration: doc['duration'] ?? '',
+          duration: doc['duration'] ?? 0,
           location: doc['location'] ?? '',
           emailStudent: doc['emailStudent'] ?? '',
           notes: doc['notes'] ?? '',
